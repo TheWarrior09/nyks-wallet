@@ -1,0 +1,46 @@
+syntax = "proto3";
+package twilightproject.nyks.bridge;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/twilight-project/nyks/x/bridge/types";
+
+// Msg defines the Msg service.
+service Msg {
+      rpc ConfirmBtcDeposit(MsgConfirmBtcDeposit) returns (MsgConfirmBtcDepositResponse);
+  rpc RegisterBtcDepositAddress(MsgRegisterBtcDepositAddress) returns (MsgRegisterBtcDepositAddressResponse);
+  rpc RegisterReserveAddress(MsgRegisterReserveAddress) returns (MsgRegisterReserveAddressResponse);
+// this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgConfirmBtcDeposit {
+  string depositAddress = 1;
+  uint64 depositAmount = 2;
+  uint64 height = 3;
+  string hash = 4;
+  string twilightDepositAddress = 5;
+  string btcOracleAddress = 6;
+}
+
+message MsgConfirmBtcDepositResponse {
+  string twilightDepositAddress = 1;
+}
+
+message MsgRegisterBtcDepositAddress {
+  string depositAddress = 1;
+  string twilightDepositAddress = 2;
+}
+
+message MsgRegisterBtcDepositAddressResponse {
+}
+
+message MsgRegisterReserveAddress {
+  string reserveScript = 1;
+  string judgeAddress = 2;
+}
+
+message MsgRegisterReserveAddressResponse {
+  string reserveScript = 1;
+}
+
+// this line is used by starport scaffolding # proto/tx/message
