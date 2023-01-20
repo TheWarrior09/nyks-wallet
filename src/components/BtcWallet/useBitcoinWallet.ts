@@ -2,7 +2,7 @@ import type { StdSignature } from '@keplr-wallet/types';
 import { BIP32Factory } from 'bip32';
 import { entropyToMnemonic, mnemonicToSeedSync } from 'bip39';
 import { crypto, payments, Psbt } from 'bitcoinjs-lib';
-import { sign, verify } from 'bitcoinjs-message';
+// import { sign, verify } from 'bitcoinjs-message';
 import { ECPairFactory } from 'ecpair';
 import { useState } from 'react';
 import * as ecc from 'tiny-secp256k1';
@@ -61,31 +61,31 @@ export const useBitcoinWallet = ({
     }
   };
 
-  const generateBTCSignatureFromMsg = () => {
-    if (userMnemonicGenerated || userMnemonicInput) {
-      const seed = mnemonicToSeedSync(
-        userMnemonicGenerated ? userMnemonicGenerated : userMnemonicInput,
-      );
-      const masterNode = bip32.fromSeed(seed);
-      const childNode = masterNode.derivePath(btcDerivatePath);
-      const btcP2pkhAddress = getP2pkhAddress(childNode.publicKey);
+  // const generateBTCSignatureFromMsg = () => {
+  //   if (userMnemonicGenerated || userMnemonicInput) {
+  //     const seed = mnemonicToSeedSync(
+  //       userMnemonicGenerated ? userMnemonicGenerated : userMnemonicInput,
+  //     );
+  //     const masterNode = bip32.fromSeed(seed);
+  //     const childNode = masterNode.derivePath(btcDerivatePath);
+  //     const btcP2pkhAddress = getP2pkhAddress(childNode.publicKey);
 
-      if (childNode.privateKey && btcP2pkhAddress.address) {
-        const msg = 'Hello';
-        const msgHash = Buffer.from(msg);
+  //     if (childNode.privateKey && btcP2pkhAddress.address) {
+  //       const msg = 'Hello';
+  //       const msgHash = Buffer.from(msg);
 
-        const signature = sign(msg, childNode.privateKey, true);
+  //       const signature = sign(msg, childNode.privateKey, true);
 
-        const isMessageVerify = verify(msg, btcP2pkhAddress.address, signature);
+  //       const isMessageVerify = verify(msg, btcP2pkhAddress.address, signature);
 
-        const signature1 = childNode.sign(crypto.sha256(msgHash));
+  //       const signature1 = childNode.sign(crypto.sha256(msgHash));
 
-        const isMessage1Verify = childNode.verify(crypto.sha256(msgHash), signature1);
+  //       const isMessage1Verify = childNode.verify(crypto.sha256(msgHash), signature1);
 
-        return { isMessageVerify, isMessage1Verify };
-      }
-    }
-  };
+  //       return { isMessageVerify, isMessage1Verify };
+  //     }
+  //   }
+  // };
 
   const createTransaction = async () => {
     if (userMnemonicGenerated) {
