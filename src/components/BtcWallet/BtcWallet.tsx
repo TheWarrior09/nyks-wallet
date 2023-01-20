@@ -66,15 +66,13 @@ export default function BtcWallet() {
     userMnemonicInput,
   });
 
-  const { getBTCReserveAddress, reserveScriptAddresses } = useTwilightRestApi({
+  const { getBTCReserveAddress, reserveScriptAddresses, registeredBTCDepositAddress } =
+    useTwilightRestApi({ twilightAddress: accountInfo?.address });
+
+  const { registerBtcAddressOnNyks, txIdNYKS } = useTwilightRpcWithCosmjs({
+    btcAddress: btcAddress?.address,
     twilightAddress: accountInfo?.address,
   });
-
-  const { registerBtcAddressOnNyks, txIdNYKS, isDepositAddressRegistered } =
-    useTwilightRpcWithCosmjs({
-      btcAddress: btcAddress?.address,
-      twilightAddress: accountInfo?.address,
-    });
 
   const handleGetBtcAddressUTXOs = () => getAddressUTXOs(btcAddress?.address);
 
