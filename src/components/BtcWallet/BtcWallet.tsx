@@ -69,10 +69,11 @@ export default function BtcWallet() {
   const { getBTCReserveAddress, reserveScriptAddresses, registeredBTCDepositAddress } =
     useTwilightRestApi({ twilightAddress: accountInfo?.address });
 
-  const { registerBtcAddressOnNyks, txIdNYKS } = useTwilightRpcWithCosmjs({
-    btcAddress: btcAddress?.address,
-    twilightAddress: accountInfo?.address,
-  });
+  const { registerBtcAddressOnNyks, txIdNYKS, isDepositAddressRegistered } =
+    useTwilightRpcWithCosmjs({
+      btcAddress: btcAddress?.address,
+      twilightAddress: accountInfo?.address,
+    });
 
   const handleGetBtcAddressUTXOs = () => getAddressUTXOs(btcAddress?.address);
 
@@ -92,6 +93,35 @@ export default function BtcWallet() {
 
   const handleFeeForTxChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setFeeForTx(event.target.valueAsNumber);
+
+  const renderContentBasedOnAddressRegistered = () => {
+    if (registeredBTCDepositAddress && btcAddress) {
+      if (
+        registeredBTCDepositAddress.depositAddress === btcAddress.address ||
+        isDepositAddressRegistered
+      ) {
+        return (
+          <FormControlLabel
+            control={<Checkbox checked color="success" />}
+            label="This Bitcoin address is registered on the NYKS blockchain"
+          />
+        );
+      } else {
+        return (
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, mb: 2 }}
+            onClick={registerBtcAddressOnNyks}
+          >
+            Register BTC address on NYKS
+          </Button>
+        );
+      }
+    } else {
+      return null;
+    }
+  };
 
   const newUser = (
     <>
@@ -160,23 +190,7 @@ export default function BtcWallet() {
           Generate bitcoin address
         </Button>
 
-        {registeredBTCDepositAddress && btcAddress ? (
-          registeredBTCDepositAddress.depositAddress === btcAddress.address ? (
-            <FormControlLabel
-              control={<Checkbox checked color="success" />}
-              label="This Bitcoin address is registered on the NYKS blockchain"
-            />
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{ mt: 2, mb: 2 }}
-              onClick={registerBtcAddressOnNyks}
-            >
-              Register BTC address on NYKS
-            </Button>
-          )
-        ) : null}
+        {renderContentBasedOnAddressRegistered()}
       </Box>
 
       <Box>
