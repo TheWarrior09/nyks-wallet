@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useQueryWithAxiosGet } from 'src/hooks';
 import { IRegisteredBTCDeopsitAddress, IReserveScriptAddressResponse } from './btcWalletTypes';
 import { twilightRestUrl } from './constants';
 
@@ -7,32 +7,51 @@ interface IuseTwilightRestApi {
 }
 
 export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => {
-  const [reserveScriptAddresses, setReserveScriptAddresses] =
-    useState<IReserveScriptAddressResponse>();
+  const btcDepositAddressEndpoint = `${twilightRestUrl}twilight-project/nyks/bridge/registered_btc_deposit_address_by_twilight_address/${twilightAddress}`;
 
-  const [registeredBTCDepositAddress, setRegisteredBTCDepositAddress] =
-    useState<IRegisteredBTCDeopsitAddress>();
+  const {
+    data: registeredBTCDepositAddressData,
+    error: registeredBTCDepositAddressError,
+    status: registeredBTCDepositAddressStatus,
+    fetchStatus: registeredBTCDepositAddressFetchStatus,
+  } = useQueryWithAxiosGet<IRegisteredBTCDeopsitAddress>({
+    queryKey: ['registered_btc_deposit_address_by_twilight_address', twilightAddress ?? ''],
+    url: btcDepositAddressEndpoint,
+    config: {
+      enabled: !!twilightAddress,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    },
+  });
 
-  useEffect(() => {
-    const getRegisterrdBTCDepositAddress = async () => {
-      if (!twilightAddress) return;
-      const btcDepositAddressEndpoint = `${twilightRestUrl}twilight-project/nyks/bridge/registered_btc_deposit_address_by_twilight_address/${twilightAddress}`;
+  const reserveScriptAddressesEndpoint = `${twilightRestUrl}twilight-project/nyks/bridge/registered_reserve_scripts`;
 
-      const btcDepositAddressQueryResponse = await fetch(btcDepositAddressEndpoint);
-      const btcDepositAddressData = await btcDepositAddressQueryResponse.json();
+  const {
+    data: reserveScriptAddressesData,
+    error: reserveScriptAddressesError,
+    status: reserveScriptAddressesStatus,
+    fetchStatus: reserveScriptAddressesFetchStatus,
+    refetch: refetchReserveScriptAddresses,
+  } = useQueryWithAxiosGet<IReserveScriptAddressResponse>({
+    queryKey: ['registered_reserve_scripts'],
+    url: reserveScriptAddressesEndpoint,
+    config: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      retry: false,
+      enabled: false,
+    },
+  });
 
-      setRegisteredBTCDepositAddress(btcDepositAddressData);
-    };
-
-    getRegisterrdBTCDepositAddress();
-  }, [twilightAddress]);
-
-  const getBTCReserveAddress = async () => {
-    const reserveScriptAddressesEndpoint = `${twilightRestUrl}twilight-project/nyks/bridge/registered_reserve_scripts`;
-    const reserveAddressesQueryResponse = await fetch(reserveScriptAddressesEndpoint);
-    const reserveScriptAddressesData = await reserveAddressesQueryResponse.json();
-    setReserveScriptAddresses(reserveScriptAddressesData);
+  return {
+    registeredBTCDepositAddressData,
+    registeredBTCDepositAddressError,
+    registeredBTCDepositAddressStatus,
+    registeredBTCDepositAddressFetchStatus,
+    reserveScriptAddressesData,
+    reserveScriptAddressesError,
+    reserveScriptAddressesStatus,
+    reserveScriptAddressesFetchStatus,
+    refetchReserveScriptAddresses,
   };
-
-  return { getBTCReserveAddress, reserveScriptAddresses, registeredBTCDepositAddress };
 };

@@ -66,8 +66,13 @@ export default function BtcWallet() {
     userMnemonicInput,
   });
 
-  const { getBTCReserveAddress, reserveScriptAddresses, registeredBTCDepositAddress } =
-    useTwilightRestApi({ twilightAddress: accountInfo?.address });
+  const {
+    registeredBTCDepositAddressData,
+    registeredBTCDepositAddressStatus,
+    reserveScriptAddressesData,
+    reserveScriptAddressesStatus,
+    refetchReserveScriptAddresses,
+  } = useTwilightRestApi({ twilightAddress: accountInfo?.address });
 
   const { registerBtcAddressOnNyks, txIdNYKS, isDepositAddressRegistered } =
     useTwilightRpcWithCosmjs({
@@ -78,6 +83,8 @@ export default function BtcWallet() {
   const handleGetBtcAddressUTXOs = () => getAddressUTXOs(btcAddress?.address);
 
   const handleBroadcastTranasction = () => broadcastTranasction(rawTranasctionHex);
+
+  const handleRefetchReserveScriptAddresses = () => refetchReserveScriptAddresses();
 
   const handleAlreadyBtcAddressCreated = (event: React.ChangeEvent<HTMLInputElement>) =>
     setHasAccount(event.target.checked);
@@ -95,9 +102,10 @@ export default function BtcWallet() {
     setFeeForTx(event.target.valueAsNumber);
 
   const renderContentBasedOnAddressRegistered = () => {
-    if (registeredBTCDepositAddress && btcAddress) {
+    if (btcAddress) {
       if (
-        registeredBTCDepositAddress.depositAddress === btcAddress.address ||
+        (registeredBTCDepositAddressStatus === 'success' &&
+          registeredBTCDepositAddressData?.depositAddress === btcAddress.address) ||
         isDepositAddressRegistered
       ) {
         return (
@@ -209,7 +217,7 @@ export default function BtcWallet() {
           variant="contained"
           color="primary"
           sx={{ mt: 2, mb: 2 }}
-          onClick={getBTCReserveAddress}
+          onClick={handleRefetchReserveScriptAddresses}
         >
           Get reserve script address
         </Button>
@@ -388,12 +396,12 @@ export default function BtcWallet() {
         </Box>
       ) : null}
 
-      {reserveScriptAddresses ? (
+      {reserveScriptAddressesStatus === 'success' ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             Reserve script addresses:
           </Typography>
-          <pre>{JSON.stringify(reserveScriptAddresses.scripts, null, 2)}</pre>
+          <pre>{JSON.stringify(reserveScriptAddressesData?.scripts, null, 2)}</pre>
         </Box>
       ) : null}
 
