@@ -8,7 +8,7 @@ async function queryFunction<T>(url: string) {
 interface IuseQueryWithAxiosGet<T> {
   queryKey: string[];
   url: string;
-  config?: UseQueryOptions<Promise<T>, AxiosError, T>;
+  config?: UseQueryOptions<Promise<T>, AxiosError<any>, T>;
 }
 
 function useQueryWithAxiosGet<T = any>({ queryKey, url, config }: IuseQueryWithAxiosGet<T>) {
