@@ -28,7 +28,7 @@ import { AccountData } from '@cosmjs/proto-signing';
 export default function RegisterBitcoinAddress() {
   const [BTCDepositAddress, setBTCDepositAddress] = useState('');
 
-  const { connectKeplr, accountBalanceInfo, accountInfo } = useKeplrWallet();
+  const { connectKeplr, accountBalanceInfo, accountInfo, keplrConnected } = useKeplrWallet();
 
   const {
     registeredBTCDepositAddressData,
@@ -74,7 +74,7 @@ export default function RegisterBitcoinAddress() {
     <>
       <Box>
         <Button variant="contained" color="primary" sx={{ mt: 2, mb: 2 }} onClick={connectKeplr}>
-          Connect Keplr wallet
+          {keplrConnected ? 'Connected to Keplr' : 'Connect Keplr wallet'}
         </Button>
       </Box>
 
@@ -116,20 +116,15 @@ export default function RegisterBitcoinAddress() {
       ) : null}
 
       <Box>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2, mb: 2 }}
-          onClick={handleRefetchReserveScriptAddresses}
-        >
-          Get reserve script address
-        </Button>
+        <Typography mt={2} mb={2}>
+          Nyks BTC balance shown after 5 blocks conforimation on BTC blockchain.
+        </Typography>
       </Box>
 
       {PROPOSAL_TYPE_BTC_DEPOSITData ? (
         <Box sx={{ mt: 2, mb: 2 }}>
           <Typography variant="h6" id="tableTitle" component="div" sx={{ mb: 2 }}>
-            Msg Confirm Btc Deposit
+            MsgConfirmBtcDeposit
           </Typography>
 
           <BTCDepositProposalTable
@@ -146,7 +141,7 @@ export default function RegisterBitcoinAddress() {
       {accountInfo ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-            Nyks address:
+            Twilight address:
           </Typography>
           <pre>{accountInfo.address}</pre>
         </Box>
@@ -161,7 +156,7 @@ export default function RegisterBitcoinAddress() {
           ) : (
             <>
               <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-                Nyks chain balance:
+                Balance:
               </Typography>
               <pre>
                 {accountBalanceInfo.map((item) => (
@@ -184,13 +179,13 @@ export default function RegisterBitcoinAddress() {
           <pre>{registeredBTCDepositAddressData.depositAddress}</pre>
           <FormControlLabel
             control={<Checkbox checked color="success" />}
-            label="This Bitcoin address is registered on the NYKS blockchain with your twilight address."
+            label="This Bitcoin address is registered on the Nyks testnet with your twilight address."
           />
 
           <Typography mt={2} mb={2}>
-            Once you deposit BTC from address{' '}
-            {`"${registeredBTCDepositAddressData.depositAddress}"`} to reserve script address, NYKS
-            BTC balance shown after 5 blocks conforimation on BTC blockchain.
+            Please deposit your desired amount of BTC from address
+            <pre>{`"${registeredBTCDepositAddressData.depositAddress}"`}</pre> to any of the reserve
+            script address.
           </Typography>
         </Box>
       ) : null}
@@ -211,6 +206,17 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
+      <Box>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2, mb: 2 }}
+          onClick={handleRefetchReserveScriptAddresses}
+        >
+          Get reserve script address
+        </Button>
+      </Box>
+
       {reserveScriptAddressesStatus === 'success' ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
@@ -225,7 +231,7 @@ export default function RegisterBitcoinAddress() {
   return (
     <Container maxWidth="xl" component="section">
       <Typography variant="h4" component="h1" color="text.secondary" mt={2} mb={2}>
-        Register bitcoin address on NYKS.
+        Register Bitcoin Address on Nyks
       </Typography>
 
       <Grid container spacing={5}>
