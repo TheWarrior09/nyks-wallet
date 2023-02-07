@@ -1,12 +1,36 @@
 import { AccountData, Coin, OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { ChainInfo } from '@keplr-wallet/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { chainId, twilightRestUrl, twilightRpcUrl } from './constants';
 
 export const useKeplrWallet = () => {
   const [accountInfo, setAccountInfo] = useState<AccountData>();
   const [accountBalanceInfo, setAccountBalanceInfo] = useState<readonly Coin[]>();
+  const [keplrConnected, setKeplrConnected] = useState(false);
+
+  useEffect(() => {
+    const getAcooutInfoAndBalance = async () => {
+      if (window.keplr) {
+        setKeplrConnected(true);
+        const offlineSigner: OfflineSigner = window.keplr.getOfflineSigner!(chainId);
+        const account: AccountData = (await offlineSigner.getAccounts())[0];
+        setAccountInfo(account);
+
+        const signingClient = await SigningStargateClient.connectWithSigner(
+          twilightRpcUrl,
+          offlineSigner,
+        );
+        const balances: readonly Coin[] = (await signingClient.getAllBalances(account.address))!;
+        setAccountBalanceInfo(balances);
+      }
+    };
+    const interval = setInterval(getAcooutInfoAndBalance, 3000);
+    return () => {
+      setKeplrConnected(false);
+      clearInterval(interval);
+    };
+  }, []);
 
   const connectKeplr = async () => {
     if (!window.keplr) {
@@ -15,16 +39,7 @@ export const useKeplrWallet = () => {
       await window.keplr!.experimentalSuggestChain(getTestnetChainInfo());
       await window.keplr.enable(chainId);
 
-      const offlineSigner: OfflineSigner = window.keplr.getOfflineSigner!(chainId);
-      const account: AccountData = (await offlineSigner.getAccounts())[0];
-      setAccountInfo(account);
-
-      const signingClient = await SigningStargateClient.connectWithSigner(
-        twilightRpcUrl,
-        offlineSigner,
-      );
-      const balances: readonly Coin[] = (await signingClient.getAllBalances(account.address))!;
-      setAccountBalanceInfo(balances);
+      setKeplrConnected(true);
     }
   };
 
@@ -32,6 +47,7 @@ export const useKeplrWallet = () => {
     connectKeplr,
     accountInfo,
     accountBalanceInfo,
+    keplrConnected,
   };
 };
 
@@ -56,7 +72,7 @@ const getTestnetChainInfo = (): ChainInfo => ({
       coinDenom: 'nyks',
       coinMinimalDenom: 'nyks',
       coinDecimals: 1,
-      coinGeckoId: 'cosmos',
+      coinGeckoId: 'nyks',
     },
     {
       coinDenom: 'btc',
@@ -70,7 +86,7 @@ const getTestnetChainInfo = (): ChainInfo => ({
       coinDenom: 'nyks',
       coinMinimalDenom: 'nyks',
       coinDecimals: 1,
-      coinGeckoId: 'cosmos',
+      coinGeckoId: 'nyks',
       //   gasPriceStep: { low: 50000, average: 100000, high: 200000 },
       gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
     },
@@ -79,7 +95,7 @@ const getTestnetChainInfo = (): ChainInfo => ({
     coinDenom: 'nyks',
     coinMinimalDenom: 'nyks',
     coinDecimals: 1,
-    coinGeckoId: 'cosmos',
+    coinGeckoId: 'nyks',
   },
   features: ['no-legacy-stdTx'],
 });
