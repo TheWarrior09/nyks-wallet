@@ -195,7 +195,7 @@ export default function RegisterBitcoinAddress() {
             label="This Bitcoin address is registered on the Nyks testnet with your twilight address."
           />
 
-          <Typography mt={2} mb={2}>
+          <Typography component="div" mt={2} mb={2}>
             Please deposit your desired amount of BTC from address
             <pre>{`"${registeredBTCDepositAddressData.depositAddress}"`}</pre> to any of the reserve
             script address.

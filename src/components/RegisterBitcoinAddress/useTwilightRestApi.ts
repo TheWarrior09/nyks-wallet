@@ -27,7 +27,6 @@ export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => 
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       retry: 1,
-      keepPreviousData: true,
     },
   });
 
