@@ -11,8 +11,7 @@ export const useKeplrWallet = () => {
 
   useEffect(() => {
     const getAcooutInfoAndBalance = async () => {
-      if (window.keplr) {
-        setKeplrConnected(true);
+      if (window.keplr && keplrConnected) {
         const offlineSigner: OfflineSigner = window.keplr.getOfflineSigner!(chainId);
         const account: AccountData = (await offlineSigner.getAccounts())[0];
         setAccountInfo(account);
@@ -26,11 +25,9 @@ export const useKeplrWallet = () => {
       }
     };
     const interval = setInterval(getAcooutInfoAndBalance, 3000);
-    return () => {
-      setKeplrConnected(false);
-      clearInterval(interval);
-    };
-  }, []);
+
+    return () => clearInterval(interval);
+  }, [keplrConnected]);
 
   const connectKeplr = async () => {
     if (!window.keplr) {
