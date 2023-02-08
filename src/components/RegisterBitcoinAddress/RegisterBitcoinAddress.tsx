@@ -28,7 +28,8 @@ import { AccountData } from '@cosmjs/proto-signing';
 export default function RegisterBitcoinAddress() {
   const [BTCDepositAddress, setBTCDepositAddress] = useState('');
 
-  const { connectKeplr, accountBalanceInfo, accountInfo, keplrConnected } = useKeplrWallet();
+  const { connectKeplr, accountBalanceInfo, accountInfo, keplrConnected, disconnectKeplr } =
+    useKeplrWallet();
 
   const {
     registeredBTCDepositAddressData,
@@ -73,9 +74,15 @@ export default function RegisterBitcoinAddress() {
   const renderInputs = (
     <>
       <Box>
-        <Button variant="contained" color="primary" sx={{ mt: 2, mb: 2 }} onClick={connectKeplr}>
-          {keplrConnected ? 'Connected to Keplr' : 'Connect Keplr wallet'}
-        </Button>
+        {!keplrConnected ? (
+          <Button variant="contained" color="primary" sx={{ my: 2 }} onClick={connectKeplr}>
+            Connect Keplr wallet
+          </Button>
+        ) : (
+          <Button variant="contained" color="primary" sx={{ my: 2 }} onClick={disconnectKeplr}>
+            Disconnect keplr wallet
+          </Button>
+        )}
       </Box>
 
       {registeredBTCDepositAddressStatus === 'error' &&
@@ -138,6 +145,12 @@ export default function RegisterBitcoinAddress() {
 
   const renderResults = (
     <>
+      <Box>
+        <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+          Keplr wallet status: {keplrConnected ? 'Connected' : 'Disconnected'}
+        </Typography>
+      </Box>
+
       {accountInfo ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
