@@ -40,11 +40,21 @@ export const useKeplrWallet = () => {
     }
   };
 
+  const disconnectKeplr = async () => {
+    if (window.keplr) {
+      await window.keplr.disable(chainId);
+      setKeplrConnected(false);
+      setAccountInfo(undefined);
+      setAccountBalanceInfo(undefined);
+    }
+  };
+
   return {
     connectKeplr,
     accountInfo,
     accountBalanceInfo,
     keplrConnected,
+    disconnectKeplr,
   };
 };
 
