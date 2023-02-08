@@ -339,10 +339,10 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
-"@keplr-wallet/types@^0.11.32":
-  version "0.11.32"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.11.32.tgz#33dcecff96714473be6d187fb8177e12dc0ebf8b"
-  integrity sha512-WUDp4wpqwxJCN65au5syKlLs+az7l1PH1Da8z/LwoYU1soS4x/d7IfAXj8YzgsqJnxswHmDAgDDJV5mEiJgETw==
+"@keplr-wallet/types@^0.11.38":
+  version "0.11.38"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/types/-/types-0.11.38.tgz#cfaaa4686d0c5b901ba987e6806ac9a17162f0a0"
+  integrity sha512-Lcfkh3OsQMdZ9zKQeV/P4tz+ig7SjKDIY9u5MdqairDAPLPCk4qenh9wDZguNW4CWzlW/FI1A/RqltqtJQGyLg==
   dependencies:
     axios "^0.27.2"
     long "^4.0.0"

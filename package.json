@@ -16,7 +16,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
     "@emotion/styled": "^11.10.5",
-    "@keplr-wallet/types": "^0.11.32",
+    "@keplr-wallet/types": "^0.11.38",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.4",
     "@next/font": "13.1.1",
