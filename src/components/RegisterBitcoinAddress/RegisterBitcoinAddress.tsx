@@ -22,7 +22,7 @@ import { useTwilightRestApi } from './useTwilightRestApi';
 import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
 import { useValidateUserInputs } from './useValidateUserInputs';
 import { useKeplrWallet } from './useKeplrWallet';
-import { IPROPOSAL_TYPE_BTC_DEPOSIT } from './btcWalletTypes';
+import { IProposalTypeBtcDeposit } from './btcWalletTypes';
 import { AccountData } from '@cosmjs/proto-signing';
 
 export default function RegisterBitcoinAddress() {
@@ -39,7 +39,7 @@ export default function RegisterBitcoinAddress() {
     reserveScriptAddressesData,
     reserveScriptAddressesStatus,
     refetchReserveScriptAddresses,
-    PROPOSAL_TYPE_BTC_DEPOSITData,
+    proposalTypeBtcDepositData,
   } = useTwilightRestApi({ twilightAddress: accountInfo?.address });
 
   const {
@@ -128,14 +128,14 @@ export default function RegisterBitcoinAddress() {
         </Typography>
       </Box>
 
-      {PROPOSAL_TYPE_BTC_DEPOSITData ? (
+      {proposalTypeBtcDepositData ? (
         <Box sx={{ mt: 2, mb: 2 }}>
           <Typography variant="h6" id="tableTitle" component="div" sx={{ mb: 2 }}>
             MsgConfirmBtcDeposit
           </Typography>
 
           <BTCDepositProposalTable
-            PROPOSAL_TYPE_BTC_DEPOSITData={PROPOSAL_TYPE_BTC_DEPOSITData}
+            proposalTypeBtcDepositData={proposalTypeBtcDepositData}
             accountInfo={accountInfo}
           />
         </Box>
@@ -260,10 +260,10 @@ export default function RegisterBitcoinAddress() {
 }
 
 function BTCDepositProposalTable({
-  PROPOSAL_TYPE_BTC_DEPOSITData,
+  proposalTypeBtcDepositData,
   accountInfo,
 }: {
-  PROPOSAL_TYPE_BTC_DEPOSITData: IPROPOSAL_TYPE_BTC_DEPOSIT | undefined;
+  proposalTypeBtcDepositData: IProposalTypeBtcDeposit | undefined;
   accountInfo: AccountData | undefined;
 }) {
   return (
@@ -279,7 +279,7 @@ function BTCDepositProposalTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {PROPOSAL_TYPE_BTC_DEPOSITData?.attestations
+          {proposalTypeBtcDepositData?.attestations
             .filter((item) => item.proposal.twilightDepositAddress === accountInfo?.address)
             .map((row, index) => (
               <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>

@@ -17,7 +17,7 @@ export interface IRegisteredBTCDeopsitAddress {
   twilightDepositAddress: string;
 }
 
-export interface IPROPOSAL_TYPE_BTC_DEPOSIT {
+export interface IProposalTypeBtcDeposit {
   attestations: AttestationsEntity[] | [];
 }
 interface AttestationsEntity {

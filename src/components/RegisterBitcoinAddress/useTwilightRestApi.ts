@@ -1,6 +1,6 @@
 import { useQueryWithAxiosGet } from 'src/hooks';
 import {
-  IPROPOSAL_TYPE_BTC_DEPOSIT,
+  IProposalTypeBtcDeposit,
   IRegisteredBTCDeopsitAddress,
   IReserveScriptAddressResponse,
 } from './btcWalletTypes';
@@ -52,14 +52,17 @@ export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => 
   const attestationsPROPOSAL_TYPE_BTC_DEPOSITEndpoint = `${twilightRestUrl}twilight-project/nyks/nyks/attestations?proposal_type=PROPOSAL_TYPE_BTC_DEPOSIT`;
 
   const {
-    data: PROPOSAL_TYPE_BTC_DEPOSITData,
-    error: PROPOSAL_TYPE_BTC_DEPOSITError,
-    status: PROPOSAL_TYPE_BTC_DEPOSITStatus,
-    fetchStatus: PROPOSAL_TYPE_BTC_DEPOSITFetchStatus,
-  } = useQueryWithAxiosGet<IPROPOSAL_TYPE_BTC_DEPOSIT>({
-    queryKey: ['attestations', 'proposal_type=PROPOSAL_TYPE_BTC_DEPOSIT'],
+    data: proposalTypeBtcDepositData,
+    error: proposalTypeBtcDepositError,
+    status: proposalTypeBtcDepositStatus,
+    fetchStatus: proposalTypeBtcDepositFetchStatus,
+  } = useQueryWithAxiosGet<IProposalTypeBtcDeposit>({
+    queryKey: ['attestations', 'proposal_type=PROPOSAL_TYPE_BTC_DEPOSIT', twilightAddress ?? ''],
     url: attestationsPROPOSAL_TYPE_BTC_DEPOSITEndpoint,
-    config: { enabled: !!twilightAddress, refetchInterval: 10000 },
+    config: {
+      enabled: !!twilightAddress,
+      refetchInterval: 5000,
+    },
   });
 
   return {
@@ -73,9 +76,9 @@ export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => 
     reserveScriptAddressesStatus,
     reserveScriptAddressesFetchStatus,
     refetchReserveScriptAddresses,
-    PROPOSAL_TYPE_BTC_DEPOSITData,
-    PROPOSAL_TYPE_BTC_DEPOSITError,
-    PROPOSAL_TYPE_BTC_DEPOSITStatus,
-    PROPOSAL_TYPE_BTC_DEPOSITFetchStatus,
+    proposalTypeBtcDepositData,
+    proposalTypeBtcDepositError,
+    proposalTypeBtcDepositStatus,
+    proposalTypeBtcDepositFetchStatus,
   };
 };
