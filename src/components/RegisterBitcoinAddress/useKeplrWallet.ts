@@ -1,13 +1,16 @@
 import { AccountData, Coin, OfflineSigner } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { ChainInfo } from '@keplr-wallet/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { chainId, twilightRestUrl, twilightRpcUrl } from './constants';
 
 export const useKeplrWallet = () => {
   const [accountInfo, setAccountInfo] = useState<AccountData>();
   const [accountBalanceInfo, setAccountBalanceInfo] = useState<readonly Coin[]>();
   const [keplrConnected, setKeplrConnected] = useState(false);
+
+  const keplrConnectionRef = useRef<boolean>();
+  keplrConnectionRef.current = keplrConnected;
 
   useEffect(() => {
     const getAcooutInfoAndBalance = async () => {
@@ -21,7 +24,7 @@ export const useKeplrWallet = () => {
           offlineSigner,
         );
         const balances: readonly Coin[] = (await signingClient.getAllBalances(account.address))!;
-        setAccountBalanceInfo(balances);
+        keplrConnectionRef.current && setAccountBalanceInfo(balances);
       }
     };
     const interval = setInterval(getAcooutInfoAndBalance, 3000);
