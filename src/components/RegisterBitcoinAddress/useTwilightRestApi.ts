@@ -1,27 +1,27 @@
 import { useQueryWithAxiosGet } from 'src/hooks';
 import {
-  IProposalTypeBtcDeposit,
-  IRegisteredBTCDeopsitAddress,
-  IReserveScriptAddressResponse,
+  ProposalTypeBtcDeposit,
+  RegisteredBtcDepositAddress,
+  ReserveScriptAddressResponse,
 } from './btcWalletTypes';
 import { twilightRestUrl } from './constants';
 
-interface IuseTwilightRestApi {
+interface UseTwilightRestApi {
   twilightAddress: string | undefined;
 }
 
-export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => {
-  const btcDepositAddressEndpoint = `${twilightRestUrl}twilight-project/nyks/bridge/registered_btc_deposit_address_by_twilight_address/${twilightAddress}`;
+export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
+  const BTC_DEPOSIT_ADDRESS_ENDPOINT = `${twilightRestUrl}twilight-project/nyks/bridge/registered_btc_deposit_address_by_twilight_address/${twilightAddress}`;
 
   const {
-    data: registeredBTCDepositAddressData,
-    error: registeredBTCDepositAddressError,
-    status: registeredBTCDepositAddressStatus,
-    fetchStatus: registeredBTCDepositAddressFetchStatus,
-    refetch: refetchRegisteredBTCDepositAddress,
-  } = useQueryWithAxiosGet<IRegisteredBTCDeopsitAddress>({
+    data: registeredBtcDepositAddressData,
+    error: registeredBtcDepositAddressError,
+    status: registeredBtcDepositAddressStatus,
+    fetchStatus: registeredBtcDepositAddressFetchStatus,
+    refetch: refetchRegisteredBtcDepositAddress,
+  } = useQueryWithAxiosGet<RegisteredBtcDepositAddress>({
     queryKey: ['registered_btc_deposit_address_by_twilight_address', twilightAddress ?? ''],
-    url: btcDepositAddressEndpoint,
+    url: BTC_DEPOSIT_ADDRESS_ENDPOINT,
     config: {
       enabled: !!twilightAddress,
       refetchOnWindowFocus: false,
@@ -30,7 +30,7 @@ export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => 
     },
   });
 
-  const reserveScriptAddressesEndpoint = `${twilightRestUrl}twilight-project/nyks/bridge/registered_reserve_scripts`;
+  const RESERVE_SCRIPT_ADDRESS_ENDPOINT = `${twilightRestUrl}twilight-project/nyks/bridge/registered_reserve_scripts`;
 
   const {
     data: reserveScriptAddressesData,
@@ -38,9 +38,9 @@ export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => 
     status: reserveScriptAddressesStatus,
     fetchStatus: reserveScriptAddressesFetchStatus,
     refetch: refetchReserveScriptAddresses,
-  } = useQueryWithAxiosGet<IReserveScriptAddressResponse>({
+  } = useQueryWithAxiosGet<ReserveScriptAddressResponse>({
     queryKey: ['registered_reserve_scripts'],
-    url: reserveScriptAddressesEndpoint,
+    url: RESERVE_SCRIPT_ADDRESS_ENDPOINT,
     config: {
       refetchOnWindowFocus: false,
       refetchOnMount: false,
@@ -49,16 +49,16 @@ export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => 
     },
   });
 
-  const attestationsPROPOSAL_TYPE_BTC_DEPOSITEndpoint = `${twilightRestUrl}twilight-project/nyks/nyks/attestations?proposal_type=PROPOSAL_TYPE_BTC_DEPOSIT`;
+  const ATTESTATIONS_PROPOSAL_TYPE_BTC_DEPOSIT_ENDPOINT = `${twilightRestUrl}twilight-project/nyks/nyks/attestations?proposal_type=PROPOSAL_TYPE_BTC_DEPOSIT`;
 
   const {
     data: proposalTypeBtcDepositData,
     error: proposalTypeBtcDepositError,
     status: proposalTypeBtcDepositStatus,
     fetchStatus: proposalTypeBtcDepositFetchStatus,
-  } = useQueryWithAxiosGet<IProposalTypeBtcDeposit>({
+  } = useQueryWithAxiosGet<ProposalTypeBtcDeposit>({
     queryKey: ['attestations', 'proposal_type=PROPOSAL_TYPE_BTC_DEPOSIT', twilightAddress ?? ''],
-    url: attestationsPROPOSAL_TYPE_BTC_DEPOSITEndpoint,
+    url: ATTESTATIONS_PROPOSAL_TYPE_BTC_DEPOSIT_ENDPOINT,
     config: {
       enabled: !!twilightAddress,
       refetchInterval: 5000,
@@ -66,11 +66,11 @@ export const useTwilightRestApi = ({ twilightAddress }: IuseTwilightRestApi) => 
   });
 
   return {
-    registeredBTCDepositAddressData,
-    registeredBTCDepositAddressError,
-    registeredBTCDepositAddressStatus,
-    registeredBTCDepositAddressFetchStatus,
-    refetchRegisteredBTCDepositAddress,
+    registeredBtcDepositAddressData,
+    registeredBtcDepositAddressError,
+    registeredBtcDepositAddressStatus,
+    registeredBtcDepositAddressFetchStatus,
+    refetchRegisteredBtcDepositAddress,
     reserveScriptAddressesData,
     reserveScriptAddressesError,
     reserveScriptAddressesStatus,

@@ -4,7 +4,7 @@ declare global {
   interface Window extends KeplrWindow {}
 }
 
-export interface IReserveScriptAddressResponse {
+export interface ReserveScriptAddressResponse {
   scripts: ScriptsEntity[] | [];
 }
 interface ScriptsEntity {
@@ -12,12 +12,12 @@ interface ScriptsEntity {
   judgeAddress: string;
 }
 
-export interface IRegisteredBTCDeopsitAddress {
+export interface RegisteredBtcDepositAddress {
   depositAddress: string;
   twilightDepositAddress: string;
 }
 
-export interface IProposalTypeBtcDeposit {
+export interface ProposalTypeBtcDeposit {
   attestations: AttestationsEntity[] | [];
 }
 interface AttestationsEntity {

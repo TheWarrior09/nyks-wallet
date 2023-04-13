@@ -5,13 +5,13 @@ async function queryFunction<T>(url: string) {
   return (await axios.get<T>(url)).data;
 }
 
-interface IuseQueryWithAxiosGet<T> {
+interface UseQueryWithAxiosGet<T> {
   queryKey: string[];
   url: string;
   config?: UseQueryOptions<Promise<T>, AxiosError<any>, T>;
 }
 
-function useQueryWithAxiosGet<T = any>({ queryKey, url, config }: IuseQueryWithAxiosGet<T>) {
+function useQueryWithAxiosGet<T = any>({ queryKey, url, config }: UseQueryWithAxiosGet<T>) {
   return useQuery({
     queryKey,
     queryFn: () => queryFunction<T>(url),

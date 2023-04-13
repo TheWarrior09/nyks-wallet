@@ -22,20 +22,20 @@ import { useTwilightRestApi } from './useTwilightRestApi';
 import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
 import { useValidateUserInputs } from './useValidateUserInputs';
 import { useKeplrWallet } from './useKeplrWallet';
-import { IProposalTypeBtcDeposit } from './btcWalletTypes';
+import { ProposalTypeBtcDeposit } from './btcWalletTypes';
 import { AccountData } from '@cosmjs/proto-signing';
 
 export default function RegisterBitcoinAddress() {
-  const [BTCDepositAddress, setBTCDepositAddress] = useState('');
+  const [btcDepositAddress, setBtcDepositAddress] = useState('');
 
   const { connectKeplr, accountBalanceInfo, accountInfo, keplrConnected, disconnectKeplr } =
     useKeplrWallet();
 
   const {
-    registeredBTCDepositAddressData,
-    registeredBTCDepositAddressStatus,
-    registeredBTCDepositAddressError,
-    refetchRegisteredBTCDepositAddress,
+    registeredBtcDepositAddressData,
+    registeredBtcDepositAddressStatus,
+    registeredBtcDepositAddressError,
+    refetchRegisteredBtcDepositAddress,
     reserveScriptAddressesData,
     reserveScriptAddressesStatus,
     refetchReserveScriptAddresses,
@@ -48,22 +48,25 @@ export default function RegisterBitcoinAddress() {
     isDepositAddressRegistered,
     registerBtcAddressOnNyksLoadingState,
   } = useTwilightRpcWithCosmjs({
-    btcAddress: BTCDepositAddress,
+    btcAddress: btcDepositAddress,
     twilightAddress: accountInfo?.address,
   });
 
-  const { checkBTCAddressValidity, userAddressInputState } = useValidateUserInputs({
-    transferToAddress: BTCDepositAddress,
+  const {
+    checkBtcAddressValidity: checkBtcDepositAddressValidity,
+    userInputAddressState: userDepositAddressInputState,
+  } = useValidateUserInputs({
+    btcAddress: btcDepositAddress,
   });
 
   useEffect(() => {
     if (isDepositAddressRegistered) {
-      refetchRegisteredBTCDepositAddress();
+      refetchRegisteredBtcDepositAddress();
     }
-  }, [isDepositAddressRegistered, refetchRegisteredBTCDepositAddress]);
+  }, [isDepositAddressRegistered, refetchRegisteredBtcDepositAddress]);
 
   const handleTransferToAddressChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setBTCDepositAddress(event.target.value);
+    setBtcDepositAddress(event.target.value);
 
   const handleRefetchReserveScriptAddresses = () => refetchReserveScriptAddresses();
 
@@ -85,8 +88,8 @@ export default function RegisterBitcoinAddress() {
         )}
       </Box>
 
-      {registeredBTCDepositAddressStatus === 'error' &&
-      registeredBTCDepositAddressError?.response?.data.message ===
+      {registeredBtcDepositAddressStatus === 'error' &&
+      registeredBtcDepositAddressError?.response?.data.message ===
         "Given twilightDepositAddress doesn't exist: invalid: invalid request" ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={1}>
@@ -101,9 +104,13 @@ export default function RegisterBitcoinAddress() {
               variant="outlined"
               type="text"
               onChange={handleTransferToAddressChange}
-              value={BTCDepositAddress}
-              onBlur={checkBTCAddressValidity}
-              error={typeof userAddressInputState === 'undefined' ? false : !userAddressInputState}
+              value={btcDepositAddress}
+              onBlur={checkBtcDepositAddressValidity}
+              error={
+                typeof userDepositAddressInputState === 'undefined'
+                  ? false
+                  : !userDepositAddressInputState
+              }
               sx={{ width: '450px' }}
             />
           </Box>
@@ -124,13 +131,13 @@ export default function RegisterBitcoinAddress() {
 
       <Box>
         <Typography mt={2} mb={2}>
-          Nyks BTC balance shown after 5 blocks conforimation on BTC blockchain.
+          Nyks BTC balance shown after 5 blocks conformation on BTC blockchain.
         </Typography>
       </Box>
 
       {proposalTypeBtcDepositData ? (
         <Box sx={{ mt: 2, mb: 2 }}>
-          <Typography variant="h6" id="tableTitle" component="div" sx={{ mb: 2 }}>
+          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
             MsgConfirmBtcDeposit
           </Typography>
 
@@ -183,13 +190,13 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
-      {registeredBTCDepositAddressStatus === 'success' &&
-      registeredBTCDepositAddressData?.depositAddress ? (
+      {registeredBtcDepositAddressStatus === 'success' &&
+      registeredBtcDepositAddressData?.depositAddress ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             Bitcoin address:
           </Typography>
-          <pre>{registeredBTCDepositAddressData.depositAddress}</pre>
+          <pre>{registeredBtcDepositAddressData.depositAddress}</pre>
           <FormControlLabel
             control={<Checkbox checked color="success" />}
             label="This Bitcoin address is registered on the Nyks testnet with your twilight address."
@@ -197,7 +204,7 @@ export default function RegisterBitcoinAddress() {
 
           <Typography component="div" mt={2} mb={2}>
             Please deposit your desired amount of BTC from address
-            <pre>{`"${registeredBTCDepositAddressData.depositAddress}"`}</pre> to any of the reserve
+            <pre>{`"${registeredBtcDepositAddressData.depositAddress}"`}</pre> to any of the reserve
             script address.
           </Typography>
         </Box>
@@ -263,7 +270,7 @@ function BTCDepositProposalTable({
   proposalTypeBtcDepositData,
   accountInfo,
 }: {
-  proposalTypeBtcDepositData: IProposalTypeBtcDeposit | undefined;
+  proposalTypeBtcDepositData: ProposalTypeBtcDeposit | undefined;
   accountInfo: AccountData | undefined;
 }) {
   return (
