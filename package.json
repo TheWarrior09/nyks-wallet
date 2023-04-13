@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "codegen": "npx ts-node ./src/script/codegen.js"
   },
   "dependencies": {
     "@cosmjs/amino": "^0.29.5",
