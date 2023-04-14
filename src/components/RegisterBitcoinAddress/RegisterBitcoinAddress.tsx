@@ -16,7 +16,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { coinDenom } from './constants';
 import { useTwilightRestApi } from './useTwilightRestApi';
 import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
@@ -49,18 +49,15 @@ export default function RegisterBitcoinAddress() {
 
   const {
     registerBtcAddressOnNyks,
-    txIdNYKS,
-    isDepositAddressRegistered,
-    registerBtcAddressOnNyksLoadingState,
+    msgBtcDepositAddressResponseData,
+    msgBtcDepositAddressResponseError,
+    msgBtcDepositAddressResponseStatus,
     withdrawBtcFromNyks,
     msgBtcWithdrawResponseData,
     msgBtcWithdrawResponseError,
     msgBtcWithdrawResponseStatus,
     getTransactionStatus,
-  } = useTwilightRpcWithCosmjs({
-    btcAddress: btcDepositAddress,
-    twilightAddress: accountInfo?.address,
-  });
+  } = useTwilightRpcWithCosmjs();
 
   const {
     checkBtcAddressValidity: checkBtcDepositAddressValidity,
@@ -68,12 +65,6 @@ export default function RegisterBitcoinAddress() {
   } = useValidateUserInputs({
     btcAddress: btcDepositAddress,
   });
-
-  useEffect(() => {
-    if (isDepositAddressRegistered) {
-      refetchRegisteredBtcDepositAddress();
-    }
-  }, [isDepositAddressRegistered, refetchRegisteredBtcDepositAddress]);
 
   const {
     checkBtcAddressValidity: checkBtcWithdrawalAddressValidity,
@@ -94,7 +85,10 @@ export default function RegisterBitcoinAddress() {
   const handleRefetchReserveScriptAddresses = () => refetchReserveScriptAddresses();
 
   const handleRegisterBtcAddressOnNyks = async () => {
-    await registerBtcAddressOnNyks();
+    registerBtcAddressOnNyks({
+      depositAddress: btcDepositAddress,
+      twilightDepositAddress: accountInfo?.address!,
+    });
   };
 
   const handleWithdrawalBtcFromNyks = () => {
@@ -157,9 +151,9 @@ export default function RegisterBitcoinAddress() {
             color="primary"
             sx={{ mt: 2, mb: 2 }}
             onClick={handleRegisterBtcAddressOnNyks}
-            disabled={registerBtcAddressOnNyksLoadingState}
+            disabled={msgBtcDepositAddressResponseStatus === 'loading'}
           >
-            {registerBtcAddressOnNyksLoadingState === false
+            {!(msgBtcDepositAddressResponseStatus === 'loading')
               ? 'Register BTC address on NYKS'
               : 'Loading...'}
           </Button>
@@ -299,19 +293,23 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
-      {txIdNYKS ? (
+      {msgBtcDepositAddressResponseStatus === 'success' && msgBtcDepositAddressResponseData ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-            NYKS transaction Id:
+            MsgRegisterBtcDepositAddress Tx Id:
           </Typography>
 
           <Link
-            href={`http://nyks.twilight-explorer.com/transaction/${txIdNYKS}`}
+            href={`http://nyks.twilight-explorer.com/transaction/${msgBtcDepositAddressResponseData.transactionHash}`}
             target="_blank"
             rel="noreferrer"
           >
-            {txIdNYKS}
+            {msgBtcDepositAddressResponseData.transactionHash}
           </Link>
+
+          <Typography component="div" mt={2} mb={2}>
+            Status - {getTransactionStatus(msgBtcDepositAddressResponseData)}
+          </Typography>
         </Box>
       ) : null}
 
