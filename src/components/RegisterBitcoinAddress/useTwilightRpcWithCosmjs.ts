@@ -19,30 +19,50 @@ async function getSigningClient() {
   }
 }
 
+const signAndBroadcastRegisterBtcAddressTx = async (msg: MsgRegisterBtcDepositAddress) => {
+  const signingClient = await getSigningClient();
+  if (signingClient === undefined) return;
+  const { registerBtcDepositAddress } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
+  const msgRegisterBtcDepositAddress = registerBtcDepositAddress({
+    depositAddress: msg.depositAddress,
+    twilightDepositAddress: msg.twilightDepositAddress,
+  });
+  const gasPrice = GasPrice.fromString('1nyks');
+  const gasEstimation = await signingClient.simulate(
+    msg.twilightDepositAddress,
+    [msgRegisterBtcDepositAddress],
+    '',
+  );
+  const fee = calculateFee(Math.round(gasEstimation * 1.3), gasPrice);
+  return signingClient.signAndBroadcast(
+    msg.twilightDepositAddress,
+    [msgRegisterBtcDepositAddress],
+    fee,
+  );
+};
+
+const signAndBroadcastWithdrawBtcTx = async (msg: MsgWithdrawBtcRequest) => {
+  const signingClient = await getSigningClient();
+  if (signingClient === undefined) return;
+  const { withdrawBtcRequest } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
+  const msgWithdrawBtcRequest = withdrawBtcRequest({
+    withdrawAddress: msg.withdrawAddress,
+    reserveAddress: msg.reserveAddress,
+    withdrawAmount: msg.withdrawAmount,
+    twilightAddress: msg.twilightAddress,
+  });
+  const gasPrice = GasPrice.fromString('1nyks');
+  const gasEstimation = await signingClient.simulate(
+    msg.twilightAddress,
+    [msgWithdrawBtcRequest],
+    '',
+  );
+  const fee = calculateFee(Math.round(gasEstimation * 1.3), gasPrice);
+  return signingClient.signAndBroadcast(msg.twilightAddress, [msgWithdrawBtcRequest], fee);
+};
+
 export const useTwilightRpcWithCosmjs = () => {
   const queryClient = useQueryClient();
-
-  const signAndBroadcastRegisterBtcAddressTx = async (msg: MsgRegisterBtcDepositAddress) => {
-    const signingClient = await getSigningClient();
-    if (signingClient === undefined) return;
-    const { registerBtcDepositAddress } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
-    const msgRegisterBtcDepositAddress = registerBtcDepositAddress({
-      depositAddress: msg.depositAddress,
-      twilightDepositAddress: msg.twilightDepositAddress,
-    });
-    const gasPrice = GasPrice.fromString('1nyks');
-    const gasEstimation = await signingClient.simulate(
-      msg.twilightDepositAddress,
-      [msgRegisterBtcDepositAddress],
-      '',
-    );
-    const fee = calculateFee(Math.round(gasEstimation * 1.3), gasPrice);
-    return signingClient.signAndBroadcast(
-      msg.twilightDepositAddress,
-      [msgRegisterBtcDepositAddress],
-      fee,
-    );
-  };
 
   const {
     data: msgBtcDepositAddressResponseData,
@@ -57,26 +77,6 @@ export const useTwilightRpcWithCosmjs = () => {
       });
     },
   });
-
-  const signAndBroadcastWithdrawBtcTx = async (msg: MsgWithdrawBtcRequest) => {
-    const signingClient = await getSigningClient();
-    if (signingClient === undefined) return;
-    const { withdrawBtcRequest } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
-    const msgWithdrawBtcRequest = withdrawBtcRequest({
-      withdrawAddress: msg.withdrawAddress,
-      reserveAddress: msg.reserveAddress,
-      withdrawAmount: msg.withdrawAmount,
-      twilightAddress: msg.twilightAddress,
-    });
-    const gasPrice = GasPrice.fromString('1nyks');
-    const gasEstimation = await signingClient.simulate(
-      msg.twilightAddress,
-      [msgWithdrawBtcRequest],
-      '',
-    );
-    const fee = calculateFee(Math.round(gasEstimation * 1.3), gasPrice);
-    return signingClient.signAndBroadcast(msg.twilightAddress, [msgWithdrawBtcRequest], fee);
-  };
 
   const {
     data: msgBtcWithdrawResponseData,
