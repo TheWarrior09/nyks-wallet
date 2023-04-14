@@ -24,9 +24,14 @@ import { useValidateUserInputs } from './useValidateUserInputs';
 import { useKeplrWallet } from './useKeplrWallet';
 import { ProposalTypeBtcDeposit } from './btcWalletTypes';
 import { AccountData } from '@cosmjs/proto-signing';
+import Long from 'long';
+
+const RESERVE_ADDRESS = '1JRhv7zRN9xCyTntYT5nuupg7JMsE7YocL';
 
 export default function RegisterBitcoinAddress() {
   const [btcDepositAddress, setBtcDepositAddress] = useState('');
+  const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
+  const [withdrawalAmount, setWithdrawalAmount] = useState(0);
 
   const { connectKeplr, accountBalanceInfo, accountInfo, keplrConnected, disconnectKeplr } =
     useKeplrWallet();
@@ -47,6 +52,11 @@ export default function RegisterBitcoinAddress() {
     txIdNYKS,
     isDepositAddressRegistered,
     registerBtcAddressOnNyksLoadingState,
+    withdrawBtcFromNyks,
+    msgBtcWithdrawResponseData,
+    msgBtcWithdrawResponseError,
+    msgBtcWithdrawResponseStatus,
+    getTransactionStatus,
   } = useTwilightRpcWithCosmjs({
     btcAddress: btcDepositAddress,
     twilightAddress: accountInfo?.address,
@@ -65,13 +75,40 @@ export default function RegisterBitcoinAddress() {
     }
   }, [isDepositAddressRegistered, refetchRegisteredBtcDepositAddress]);
 
+  const {
+    checkBtcAddressValidity: checkBtcWithdrawalAddressValidity,
+    userInputAddressState: userWithdrawalAddressInputState,
+  } = useValidateUserInputs({
+    btcAddress: btcWithdrawalAddress,
+  });
+
   const handleTransferToAddressChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setBtcDepositAddress(event.target.value);
+
+  const handleWithdrawalAddressChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setBtcWithdrawalAddress(event.target.value);
+
+  const handleWithdrawalAmountChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setWithdrawalAmount(event.target.valueAsNumber);
 
   const handleRefetchReserveScriptAddresses = () => refetchReserveScriptAddresses();
 
   const handleRegisterBtcAddressOnNyks = async () => {
     await registerBtcAddressOnNyks();
+  };
+
+  const handleWithdrawalBtcFromNyks = () => {
+    withdrawBtcFromNyks({
+      withdrawAddress: btcWithdrawalAddress,
+      withdrawAmount: Long.fromNumber(withdrawalAmount),
+      reserveAddress: RESERVE_ADDRESS,
+      twilightAddress: accountInfo?.address!,
+    });
+  };
+
+  const getBtcBalance = () => {
+    const btcBalanceString = accountBalanceInfo?.find((balance) => balance.denom === 'btc')?.amount;
+    return typeof btcBalanceString === 'undefined' ? 0 : Number(btcBalanceString);
   };
 
   const renderInputs = (
@@ -147,6 +184,58 @@ export default function RegisterBitcoinAddress() {
           />
         </Box>
       ) : null}
+
+      {accountBalanceInfo
+        ? getBtcBalance() > 0 && (
+            <Box>
+              <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={1}>
+                Bitcoin withdraw address
+              </Typography>
+
+              <Box component="form" noValidate autoComplete="off">
+                <TextField
+                  id="outlined-basic"
+                  label="Bitcoin withdraw address"
+                  placeholder="Bitcoin address for withdrawal from NYKS"
+                  variant="outlined"
+                  type="text"
+                  onChange={handleWithdrawalAddressChange}
+                  value={btcWithdrawalAddress}
+                  onBlur={checkBtcWithdrawalAddressValidity}
+                  error={
+                    typeof userWithdrawalAddressInputState === 'undefined'
+                      ? false
+                      : !userWithdrawalAddressInputState
+                  }
+                  sx={{ width: '450px' }}
+                />
+
+                <TextField
+                  id="outlined-basic"
+                  label="Amount"
+                  placeholder="Bitcoin withdraw amount"
+                  variant="outlined"
+                  type="number"
+                  onChange={handleWithdrawalAmountChange}
+                  value={withdrawalAmount}
+                  sx={{ ml: 1 }}
+                />
+              </Box>
+
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ mt: 2, mb: 2 }}
+                onClick={handleWithdrawalBtcFromNyks}
+                disabled={msgBtcWithdrawResponseStatus === 'loading'}
+              >
+                {!(msgBtcWithdrawResponseStatus === 'loading')
+                  ? 'Withdraw BTC from NYKS'
+                  : 'Loading...'}
+              </Button>
+            </Box>
+          )
+        : null}
     </>
   );
 
@@ -223,6 +312,26 @@ export default function RegisterBitcoinAddress() {
           >
             {txIdNYKS}
           </Link>
+        </Box>
+      ) : null}
+
+      {msgBtcWithdrawResponseStatus === 'success' && msgBtcWithdrawResponseData ? (
+        <Box>
+          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+            MsgWithdrawBtcRequest Tx Id:
+          </Typography>
+
+          <Link
+            href={`http://nyks.twilight-explorer.com/transaction/${msgBtcWithdrawResponseData.transactionHash}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {msgBtcWithdrawResponseData.transactionHash}
+          </Link>
+
+          <Typography component="div" mt={2} mb={2}>
+            Status - {getTransactionStatus(msgBtcWithdrawResponseData)}
+          </Typography>
         </Box>
       ) : null}
 
