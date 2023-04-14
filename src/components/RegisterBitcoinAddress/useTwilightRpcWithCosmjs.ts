@@ -1,44 +1,10 @@
-import { EncodeObject, GeneratedType, OfflineSigner, Registry } from '@cosmjs/proto-signing';
-import {
-  defaultRegistryTypes,
-  isDeliverTxSuccess,
-  SigningStargateClient,
-  GasPrice,
-  calculateFee,
-  DeliverTxResponse,
-} from '@cosmjs/stargate';
-import { useState } from 'react';
-import {
-  twilightprojectProtoRegistry,
-  getSigningTwilightprojectClient,
-  twilightproject,
-} from 'src/codegen';
-import { chainId, coinDenom, twilightRpcUrl } from './constants';
-import { MsgWithdrawBtcRequest } from 'src/codegen/nyks/bridge/tx';
-import { useMutation } from '@tanstack/react-query';
+import { OfflineSigner } from '@cosmjs/proto-signing';
+import { isDeliverTxSuccess, GasPrice, calculateFee, DeliverTxResponse } from '@cosmjs/stargate';
+import { getSigningTwilightprojectClient, twilightproject } from 'src/codegen';
+import { chainId, twilightRpcUrl } from './constants';
+import { MsgRegisterBtcDepositAddress, MsgWithdrawBtcRequest } from 'src/codegen/nyks/bridge/tx';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-const msgRegisterBtcDepositAddressTypeUrl =
-  '/twilightproject.nyks.bridge.MsgRegisterBtcDepositAddress';
-
-interface MsgRegisterBtcDepositAddressEncodeObject extends EncodeObject {
-  readonly typeUrl: typeof msgRegisterBtcDepositAddressTypeUrl;
-  readonly value: MsgRegisterBtcDepositAddress;
-}
-
-const txTypes: ReadonlyArray<[string, GeneratedType]> = [
-  [msgRegisterBtcDepositAddressTypeUrl, MsgRegisterBtcDepositAddress],
-];
-
-const myDefaultRegistryTypes: ReadonlyArray<[string, GeneratedType]> = [
-  ...defaultRegistryTypes,
-  ...txTypes, // As you defined bankTypes earlier
-];
-
-function createDefaultRegistry(): Registry {
-  return new Registry(myDefaultRegistryTypes);
-}
-
-interface IuseKeplrWallet {
 async function getSigningClient() {
   if (!window.keplr) return;
   try {
@@ -52,65 +18,45 @@ async function getSigningClient() {
     throw error;
   }
 }
-  btcAddress: string | undefined;
-  twilightAddress: string | undefined;
-}
 
-export const useTwilightRpcWithCosmjs = ({ btcAddress, twilightAddress }: IuseKeplrWallet) => {
-  const [txIdNYKS, setTxIdNYKS] = useState<string>();
-  const [loading, setLoading] = useState(false);
+export const useTwilightRpcWithCosmjs = () => {
+  const queryClient = useQueryClient();
 
-  const [isDepositAddressRegistered, setIsDepositAddressRegistered] = useState(false);
-
-  const registerBtcAddressOnNyks = async () => {
-    if (window.keplr && btcAddress && twilightAddress) {
-      const offlineSigner: OfflineSigner = window.keplr.getOfflineSigner!(chainId);
-      const signingClient = await SigningStargateClient.connectWithSigner(
-        twilightRpcUrl,
-        offlineSigner,
-        {
-          registry: createDefaultRegistry(),
-        },
-      );
-
-      const btcDepositAddressMsg: MsgRegisterBtcDepositAddressEncodeObject = {
-        typeUrl: msgRegisterBtcDepositAddressTypeUrl,
-        value: {
-          depositAddress: btcAddress!,
-          twilightDepositAddress: twilightAddress,
-        },
-      };
-
-      const fee = {
-        amount: [
-          {
-            denom: coinDenom,
-            amount: '500',
-          },
-        ],
-        gas: '100000',
-      };
-
-      // const fee = "auto";
-
-      setLoading(true);
-
-      const broadcastTxResponse = await signingClient.signAndBroadcast(
-        twilightAddress,
-        [btcDepositAddressMsg],
-        fee,
-      );
-
-      setLoading(false);
-
-      setTxIdNYKS(broadcastTxResponse.transactionHash);
-
-      const transactionSuccessStatus = isDeliverTxSuccess(broadcastTxResponse);
-      if (transactionSuccessStatus) {
-        setIsDepositAddressRegistered(true);
-      }
-    }
+  const signAndBroadcastRegisterBtcAddressTx = async (msg: MsgRegisterBtcDepositAddress) => {
+    const signingClient = await getSigningClient();
+    if (signingClient === undefined) return;
+    const { registerBtcDepositAddress } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
+    const msgRegisterBtcDepositAddress = registerBtcDepositAddress({
+      depositAddress: msg.depositAddress,
+      twilightDepositAddress: msg.twilightDepositAddress,
+    });
+    const gasPrice = GasPrice.fromString('1nyks');
+    const gasEstimation = await signingClient.simulate(
+      msg.twilightDepositAddress,
+      [msgRegisterBtcDepositAddress],
+      '',
+    );
+    const fee = calculateFee(Math.round(gasEstimation * 1.3), gasPrice);
+    return signingClient.signAndBroadcast(
+      msg.twilightDepositAddress,
+      [msgRegisterBtcDepositAddress],
+      fee,
+    );
   };
+
+  const {
+    data: msgBtcDepositAddressResponseData,
+    error: msgBtcDepositAddressResponseError,
+    status: msgBtcDepositAddressResponseStatus,
+    mutate: registerBtcAddressOnNyks,
+  } = useMutation({
+    mutationFn: signAndBroadcastRegisterBtcAddressTx,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['registered_btc_deposit_address_by_twilight_address'],
+      });
+    },
+  });
 
   const signAndBroadcastWithdrawBtcTx = async (msg: MsgWithdrawBtcRequest) => {
     const signingClient = await getSigningClient();
@@ -146,9 +92,9 @@ export const useTwilightRpcWithCosmjs = ({ btcAddress, twilightAddress }: IuseKe
 
   return {
     registerBtcAddressOnNyks,
-    txIdNYKS,
-    registerBtcAddressOnNyksLoadingState: loading,
-    isDepositAddressRegistered,
+    msgBtcDepositAddressResponseData,
+    msgBtcDepositAddressResponseError,
+    msgBtcDepositAddressResponseStatus,
     withdrawBtcFromNyks,
     msgBtcWithdrawResponseData,
     msgBtcWithdrawResponseError,
