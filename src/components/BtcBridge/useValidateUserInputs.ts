@@ -1,19 +1,11 @@
 import validate from 'bitcoin-address-validation';
 import { useState } from 'react';
 
-function validateBtcAddress(address: string) {
-  return validate(address);
-}
-
-interface UseValidateUserInputs {
-  btcAddress: string;
-}
-
-export const useValidateUserInputs = ({ btcAddress }: UseValidateUserInputs) => {
+export const useValidateUserInputs = ({ btcAddress }: { btcAddress: string }) => {
   const [userInputAddressState, setUserAddressInputState] = useState<boolean>();
 
   const checkBtcAddressValidity = () => {
-    const isAddressValid = validateBtcAddress(btcAddress);
+    const isAddressValid = validate(btcAddress);
     setUserAddressInputState(isAddressValid);
   };
 
