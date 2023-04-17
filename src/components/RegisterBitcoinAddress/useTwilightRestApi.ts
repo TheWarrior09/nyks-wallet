@@ -1,6 +1,7 @@
 import { useQueryWithAxiosGet } from 'src/hooks';
 import {
   ProposalTypeBtcDeposit,
+  ProposalTypeBtcWithdraw,
   RegisteredBtcDepositAddress,
   ReserveScriptAddressResponse,
 } from './btcWalletTypes';
@@ -65,6 +66,22 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
     },
   });
 
+  const ATTESTATIONS_PROPOSAL_TYPE_BTC_WITHDRAW_ENDPOINT = `${twilightRestUrl}twilight-project/nyks/nyks/attestations?proposal_type=PROPOSAL_TYPE_BTC_WITHDRAW`;
+
+  const {
+    data: proposalTypeBtcWithdrawData,
+    error: proposalTypeBtcWithdrawError,
+    status: proposalTypeBtcWithdrawStatus,
+    fetchStatus: proposalTypeBtcWithdrawFetchStatus,
+  } = useQueryWithAxiosGet<ProposalTypeBtcWithdraw>({
+    queryKey: ['attestations', 'proposal_type=PROPOSAL_TYPE_BTC_WITHDRAW', twilightAddress ?? ''],
+    url: ATTESTATIONS_PROPOSAL_TYPE_BTC_WITHDRAW_ENDPOINT,
+    config: {
+      enabled: !!twilightAddress,
+      refetchInterval: 5000,
+    },
+  });
+
   return {
     registeredBtcDepositAddressData,
     registeredBtcDepositAddressError,
@@ -80,5 +97,9 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
     proposalTypeBtcDepositError,
     proposalTypeBtcDepositStatus,
     proposalTypeBtcDepositFetchStatus,
+    proposalTypeBtcWithdrawData,
+    proposalTypeBtcWithdrawError,
+    proposalTypeBtcWithdrawStatus,
+    proposalTypeBtcWithdrawFetchStatus,
   };
 };

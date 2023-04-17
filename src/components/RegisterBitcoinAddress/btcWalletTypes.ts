@@ -17,6 +17,10 @@ export interface RegisteredBtcDepositAddress {
   twilightDepositAddress: string;
 }
 
+export interface ProposalTypeBtcWithdraw {
+  // TODO: Add this type
+}
+
 export interface ProposalTypeBtcDeposit {
   attestations: AttestationsEntity[] | [];
 }
