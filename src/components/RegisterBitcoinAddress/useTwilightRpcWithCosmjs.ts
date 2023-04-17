@@ -4,11 +4,12 @@ import { getSigningTwilightprojectClient, twilightproject } from 'src/codegen';
 import { chainId, twilightRpcUrl } from './constants';
 import { MsgRegisterBtcDepositAddress, MsgWithdrawBtcRequest } from 'src/codegen/nyks/bridge/tx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getKeplr } from './useKeplrWallet';
 
 async function getSigningClient() {
-  if (!window.keplr) return;
   try {
-    const offlineSigner: OfflineSigner = window.keplr.getOfflineSigner!(chainId);
+    const keplr = getKeplr();
+    const offlineSigner: OfflineSigner = keplr.getOfflineSigner!(chainId);
     const signingClient = await getSigningTwilightprojectClient({
       rpcEndpoint: twilightRpcUrl,
       signer: offlineSigner,
@@ -21,7 +22,6 @@ async function getSigningClient() {
 
 const signAndBroadcastRegisterBtcAddressTx = async (msg: MsgRegisterBtcDepositAddress) => {
   const signingClient = await getSigningClient();
-  if (signingClient === undefined) return;
   const { registerBtcDepositAddress } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
   const msgRegisterBtcDepositAddress = registerBtcDepositAddress({
     depositAddress: msg.depositAddress,
@@ -43,7 +43,6 @@ const signAndBroadcastRegisterBtcAddressTx = async (msg: MsgRegisterBtcDepositAd
 
 const signAndBroadcastWithdrawBtcTx = async (msg: MsgWithdrawBtcRequest) => {
   const signingClient = await getSigningClient();
-  if (signingClient === undefined) return;
   const { withdrawBtcRequest } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
   const msgWithdrawBtcRequest = withdrawBtcRequest({
     withdrawAddress: msg.withdrawAddress,
