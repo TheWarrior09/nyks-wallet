@@ -33,7 +33,7 @@ export default function RegisterBitcoinAddress() {
   const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
 
-  const { connectKeplr, accountBalanceInfo, getAccountsQuery, keplrConnected, disconnectKeplr } =
+  const { connectKeplr, getAllBalancesQuery, getAccountsQuery, keplrConnected, disconnectKeplr } =
     useKeplrWallet();
 
   const twilightAddress = getAccountsQuery.data?.[0].address;
@@ -103,7 +103,9 @@ export default function RegisterBitcoinAddress() {
   };
 
   const getBtcBalance = () => {
-    const btcBalanceString = accountBalanceInfo?.find((balance) => balance.denom === 'btc')?.amount;
+    const btcBalanceString = getAllBalancesQuery.data?.find(
+      (balance) => balance.denom === 'btc',
+    )?.amount;
     return typeof btcBalanceString === 'undefined' ? 0 : Number(btcBalanceString);
   };
 
@@ -181,7 +183,7 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
-      {accountBalanceInfo
+      {getAllBalancesQuery.data
         ? getBtcBalance() > 0 && (
             <Box>
               <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={1}>
@@ -252,9 +254,9 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
-      {accountBalanceInfo ? (
+      {getAllBalancesQuery.data ? (
         <Box>
-          {!accountBalanceInfo.find((item) => item.denom === coinDenom)?.amount ? (
+          {!getAllBalancesQuery.data.find((item) => item.denom === coinDenom)?.amount ? (
             <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
               Nyks chain balance is empty. Please deposit some tokens or request some from faucet.
             </Typography>
@@ -264,7 +266,7 @@ export default function RegisterBitcoinAddress() {
                 Balance:
               </Typography>
               <pre>
-                {accountBalanceInfo.map((item) => (
+                {getAllBalancesQuery.data.map((item) => (
                   <div key={item.denom}>
                     {item.denom}: {item.amount}
                   </div>
