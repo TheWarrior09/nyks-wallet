@@ -237,7 +237,7 @@ export default function BtcBridge() {
   return (
     <Container maxWidth="xl" component="section">
       <Typography variant="h4" component="h1" color="text.secondary" mt={2} mb={2}>
-        Register Bitcoin Address on Nyks
+        Bitcoin Bridge on Nyks
       </Typography>
 
       <Grid container spacing={5}>
