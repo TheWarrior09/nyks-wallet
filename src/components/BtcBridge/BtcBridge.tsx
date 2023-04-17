@@ -13,26 +13,20 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
 import { coinDenom } from './constants';
 import { useTwilightRestApi } from './useTwilightRestApi';
 import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
-import { useValidateUserInputs } from './useValidateUserInputs';
 import { useKeplrWallet } from './useKeplrWallet';
 import { ProposalTypeBtcDeposit } from './btcWalletTypes';
 import { AccountData } from '@cosmjs/proto-signing';
-import Long from 'long';
+import { RegisterBtcAddress } from './RegisterBtcAddress';
+import { WithdrawBtc } from './WithdrawBtc';
 
-const RESERVE_ADDRESS = '1JRhv7zRN9xCyTntYT5nuupg7JMsE7YocL';
+export const RESERVE_ADDRESS = '1JRhv7zRN9xCyTntYT5nuupg7JMsE7YocL';
 
 export default function BtcBridge() {
-  const [btcDepositAddress, setBtcDepositAddress] = useState('');
-  const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
-  const [withdrawalAmount, setWithdrawalAmount] = useState(0);
-
   const { connectKeplr, getAllBalancesQuery, getAccountsQuery, keplrConnected, disconnectKeplr } =
     useKeplrWallet();
 
@@ -47,53 +41,7 @@ export default function BtcBridge() {
   const { registerBtcDepositAddressMutation, withdrawBtcRequestMutation, getTransactionStatus } =
     useTwilightRpcWithCosmjs();
 
-  const {
-    checkBtcAddressValidity: checkBtcDepositAddressValidity,
-    userInputAddressState: userDepositAddressInputState,
-  } = useValidateUserInputs({
-    btcAddress: btcDepositAddress,
-  });
-
-  const {
-    checkBtcAddressValidity: checkBtcWithdrawalAddressValidity,
-    userInputAddressState: userWithdrawalAddressInputState,
-  } = useValidateUserInputs({
-    btcAddress: btcWithdrawalAddress,
-  });
-
-  const handleTransferToAddressChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setBtcDepositAddress(event.target.value);
-
-  const handleWithdrawalAddressChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setBtcWithdrawalAddress(event.target.value);
-
-  const handleWithdrawalAmountChange = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setWithdrawalAmount(event.target.valueAsNumber);
-
-  const handleRefetchReserveScriptAddresses = () => registeredReserveScriptsQuery.refetch();
-
-  const handleRegisterBtcAddressOnNyks = async () => {
-    registerBtcDepositAddressMutation.mutate({
-      depositAddress: btcDepositAddress,
-      twilightDepositAddress: twilightAddress!,
-    });
-  };
-
-  const handleWithdrawalBtcFromNyks = () => {
-    withdrawBtcRequestMutation.mutate({
-      withdrawAddress: btcWithdrawalAddress,
-      withdrawAmount: Long.fromNumber(withdrawalAmount),
-      reserveAddress: RESERVE_ADDRESS,
-      twilightAddress: twilightAddress!,
-    });
-  };
-
-  const getBtcBalance = () => {
-    const btcBalanceString = getAllBalancesQuery.data?.find(
-      (balance) => balance.denom === 'btc',
-    )?.amount;
-    return typeof btcBalanceString === 'undefined' ? 0 : Number(btcBalanceString);
-  };
+  const handleFetchRegisteredReserveScripts = () => registeredReserveScriptsQuery.refetch();
 
   const renderInputs = (
     <>
@@ -109,98 +57,12 @@ export default function BtcBridge() {
         )}
       </Box>
 
-      {registeredBtcDepositAddressQuery.status === 'error' &&
-      registeredBtcDepositAddressQuery.error?.response?.data.message ===
-        "Given twilightDepositAddress doesn't exist: invalid: invalid request" ? (
-        <Box>
-          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={1}>
-            Register bitcoin address
-          </Typography>
-
-          <Box component="form" noValidate autoComplete="off">
-            <TextField
-              id="outlined-basic"
-              label="Bitcoin address"
-              placeholder="Bitcoin address for registration on NYKS"
-              variant="outlined"
-              type="text"
-              onChange={handleTransferToAddressChange}
-              value={btcDepositAddress}
-              onBlur={checkBtcDepositAddressValidity}
-              error={
-                typeof userDepositAddressInputState === 'undefined'
-                  ? false
-                  : !userDepositAddressInputState
-              }
-              sx={{ width: '450px' }}
-            />
-          </Box>
-
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ mt: 2, mb: 2 }}
-            onClick={handleRegisterBtcAddressOnNyks}
-            disabled={registerBtcDepositAddressMutation.status === 'loading'}
-          >
-            {!(registerBtcDepositAddressMutation.status === 'loading')
-              ? 'Register BTC address on NYKS'
-              : 'Loading...'}
-          </Button>
-        </Box>
+      {twilightAddress ? (
+        <>
+          <RegisterBtcAddress twilightAddress={twilightAddress} />
+          <WithdrawBtc twilightAddress={twilightAddress} />
+        </>
       ) : null}
-
-      {getAllBalancesQuery.data
-        ? getBtcBalance() > 0 && (
-            <Box>
-              <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={1}>
-                Bitcoin withdraw address
-              </Typography>
-
-              <Box component="form" noValidate autoComplete="off">
-                <TextField
-                  id="outlined-basic"
-                  label="Bitcoin withdraw address"
-                  placeholder="Bitcoin address for withdrawal from NYKS"
-                  variant="outlined"
-                  type="text"
-                  onChange={handleWithdrawalAddressChange}
-                  value={btcWithdrawalAddress}
-                  onBlur={checkBtcWithdrawalAddressValidity}
-                  error={
-                    typeof userWithdrawalAddressInputState === 'undefined'
-                      ? false
-                      : !userWithdrawalAddressInputState
-                  }
-                  sx={{ width: '450px' }}
-                />
-
-                <TextField
-                  id="outlined-basic"
-                  label="Amount"
-                  placeholder="Bitcoin withdraw amount"
-                  variant="outlined"
-                  type="number"
-                  onChange={handleWithdrawalAmountChange}
-                  value={withdrawalAmount}
-                  sx={{ ml: 1 }}
-                />
-              </Box>
-
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2, mb: 2 }}
-                onClick={handleWithdrawalBtcFromNyks}
-                disabled={withdrawBtcRequestMutation.status === 'loading'}
-              >
-                {!(withdrawBtcRequestMutation.status === 'loading')
-                  ? 'Withdraw BTC from NYKS'
-                  : 'Loading...'}
-              </Button>
-            </Box>
-          )
-        : null}
 
       <Box>
         <Typography mt={2} mb={2}>
@@ -342,7 +204,7 @@ export default function BtcBridge() {
           variant="contained"
           color="primary"
           sx={{ mt: 2, mb: 2 }}
-          onClick={handleRefetchReserveScriptAddresses}
+          onClick={handleFetchRegisteredReserveScripts}
         >
           Get reserve script address
         </Button>
