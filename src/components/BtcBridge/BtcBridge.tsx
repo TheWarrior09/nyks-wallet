@@ -47,11 +47,23 @@ export default function BtcBridge() {
     <>
       <Box>
         {!keplrConnected ? (
-          <Button variant="contained" color="primary" sx={{ my: 2 }} onClick={connectKeplr}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ my: 2 }}
+            size="small"
+            onClick={connectKeplr}
+          >
             Connect Keplr wallet
           </Button>
         ) : (
-          <Button variant="contained" color="primary" sx={{ my: 2 }} onClick={disconnectKeplr}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ my: 2 }}
+            size="small"
+            onClick={disconnectKeplr}
+          >
             Disconnect keplr wallet
           </Button>
         )}
@@ -101,7 +113,7 @@ export default function BtcBridge() {
   const renderResults = (
     <>
       <Box>
-        <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+        <Typography variant="h6" component="div" color="text.secondary" mb={2}>
           Keplr wallet status: {keplrConnected ? 'Connected' : 'Disconnected'}
         </Typography>
       </Box>
@@ -204,6 +216,7 @@ export default function BtcBridge() {
           variant="contained"
           color="primary"
           sx={{ mt: 2, mb: 2 }}
+          size="small"
           onClick={handleFetchRegisteredReserveScripts}
         >
           Get reserve script address

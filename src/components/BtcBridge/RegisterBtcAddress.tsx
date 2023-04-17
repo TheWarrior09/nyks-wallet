@@ -32,7 +32,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
       registeredBtcDepositAddressQuery.error.response?.data.message ===
         "Given twilightDepositAddress doesn't exist: invalid: invalid request" ? (
         <Box>
-          <Typography variant="h5" component="div" color="text.secondary" mt={2} mb={1}>
+          <Typography variant="h5" component="div" color="text.secondary" mt={1} mb={1}>
             Register bitcoin address
           </Typography>
 
@@ -43,6 +43,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
               placeholder="Bitcoin address for registration on NYKS"
               variant="outlined"
               type="text"
+              size="small"
               onChange={handleTransferToAddressChange}
               value={btcDepositAddress}
               onBlur={checkBtcDepositAddressValidity}
@@ -59,6 +60,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
             variant="contained"
             color="primary"
             sx={{ mt: 2, mb: 2 }}
+            size="small"
             onClick={handleRegisterBtcAddressOnNyks}
             disabled={registerBtcDepositAddressMutation.status === 'loading'}
           >

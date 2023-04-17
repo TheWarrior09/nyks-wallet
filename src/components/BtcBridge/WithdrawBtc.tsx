@@ -37,7 +37,7 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
     <>
       {getBtcBalanceOnNYKS() > 0 ? (
         <Box>
-          <Typography variant="h5" component="div" color="text.secondary" mt={2} mb={1}>
+          <Typography variant="h5" component="div" color="text.secondary" mt={1} mb={1}>
             Bitcoin withdraw address
           </Typography>
 
@@ -48,6 +48,7 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
               placeholder="Bitcoin address for withdrawal from NYKS"
               variant="outlined"
               type="text"
+              size="small"
               onChange={handleWithdrawalAddressChange}
               value={btcWithdrawalAddress}
               onBlur={checkBtcWithdrawalAddressValidity}
@@ -65,6 +66,7 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
               placeholder="Bitcoin withdraw amount"
               variant="outlined"
               type="number"
+              size="small"
               onChange={handleWithdrawalAmountChange}
               value={withdrawalAmount}
               sx={{ ml: 1 }}
@@ -75,6 +77,7 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
             variant="contained"
             color="primary"
             sx={{ mt: 2, mb: 2 }}
+            size="small"
             onClick={handleWithdrawalBtcFromNyks}
             disabled={withdrawBtcRequestMutation.status === 'loading'}
           >
