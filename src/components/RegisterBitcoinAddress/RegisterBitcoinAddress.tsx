@@ -42,7 +42,6 @@ export default function RegisterBitcoinAddress() {
     registeredBtcDepositAddressData,
     registeredBtcDepositAddressStatus,
     registeredBtcDepositAddressError,
-    refetchRegisteredBtcDepositAddress,
     reserveScriptAddressesData,
     reserveScriptAddressesStatus,
     refetchReserveScriptAddresses,
@@ -164,25 +163,6 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
-      <Box>
-        <Typography mt={2} mb={2}>
-          Nyks BTC balance shown after 5 blocks conformation on BTC blockchain.
-        </Typography>
-      </Box>
-
-      {proposalTypeBtcDepositData ? (
-        <Box sx={{ mt: 2, mb: 2 }}>
-          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
-            MsgConfirmBtcDeposit
-          </Typography>
-
-          <BTCDepositProposalTable
-            proposalTypeBtcDepositData={proposalTypeBtcDepositData}
-            accountInfo={accountInfo}
-          />
-        </Box>
-      ) : null}
-
       {getAllBalancesQuery.data
         ? getBtcBalance() > 0 && (
             <Box>
@@ -234,6 +214,38 @@ export default function RegisterBitcoinAddress() {
             </Box>
           )
         : null}
+
+      <Box>
+        <Typography mt={2} mb={2}>
+          Nyks BTC balance shown after 5 blocks conformation on BTC blockchain.
+        </Typography>
+      </Box>
+
+      {proposalTypeBtcDepositData ? (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
+            MsgConfirmBtcDeposit
+          </Typography>
+
+          <BTCDepositProposalTable
+            proposalTypeBtcDepositData={proposalTypeBtcDepositData}
+            accountInfo={getAccountsQuery.data?.[0]}
+          />
+        </Box>
+      ) : null}
+
+      {proposalTypeBtcDepositData ? (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
+            MsgConfirmBtcWithdraw
+          </Typography>
+
+          <BTCWithdrawProposalTable
+            proposalTypeBtcWithdrawData={proposalTypeBtcDepositData}
+            accountInfo={getAccountsQuery.data?.[0]}
+          />
+        </Box>
+      ) : null}
     </>
   );
 
@@ -398,6 +410,43 @@ function BTCDepositProposalTable({
         </TableHead>
         <TableBody>
           {proposalTypeBtcDepositData?.attestations
+            .filter((item) => item.proposal.twilightDepositAddress === accountInfo?.address)
+            .map((row, index) => (
+              <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{row.proposal.depositAmount}</TableCell>
+                <TableCell>{row.votes.length}</TableCell>
+                <TableCell>{row.observed.toString()}</TableCell>
+                <TableCell>{row.proposal.height}</TableCell>
+              </TableRow>
+            ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+}
+
+function BTCWithdrawProposalTable({
+  proposalTypeBtcWithdrawData,
+  accountInfo,
+}: {
+  proposalTypeBtcWithdrawData: ProposalTypeBtcDeposit | undefined;
+  accountInfo: AccountData | undefined;
+}) {
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>#</TableCell>
+            <TableCell>Amount</TableCell>
+            <TableCell>Votes</TableCell>
+            <TableCell>Observed</TableCell>
+            <TableCell>Height</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {proposalTypeBtcWithdrawData?.attestations
             .filter((item) => item.proposal.twilightDepositAddress === accountInfo?.address)
             .map((row, index) => (
               <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
