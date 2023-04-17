@@ -51,13 +51,19 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
   const proposalTypeBtcDepositQuery = useQuery<
     ProposalTypeBtcDeposit,
     AxiosError,
-    ProposalTypeBtcDeposit,
+    ProposalTypeBtcDeposit['attestations'],
     string[]
   >({
     queryKey: ['attestations', ATTESTATIONS_PROPOSAL_TYPE_BTC_DEPOSIT_ENDPOINT],
     queryFn: queryFunctionWithAxios,
     enabled: !!twilightAddress,
     refetchInterval: 5000,
+    select: (data) =>
+      data.attestations.length > 0
+        ? data.attestations.filter(
+            (attestation) => attestation.proposal.twilightDepositAddress === twilightAddress,
+          )
+        : [],
   });
 
   const ATTESTATIONS_PROPOSAL_TYPE_BTC_WITHDRAW_ENDPOINT = `${twilightRestUrl}twilight-project/nyks/nyks/attestations?proposal_type=PROPOSAL_TYPE_BTC_WITHDRAW`;
@@ -65,13 +71,19 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
   const proposalTypeBtcWithdrawQuery = useQuery<
     ProposalTypeBtcWithdraw,
     AxiosError,
-    ProposalTypeBtcWithdraw,
+    ProposalTypeBtcWithdraw['attestations'],
     string[]
   >({
     queryKey: ['attestations', ATTESTATIONS_PROPOSAL_TYPE_BTC_WITHDRAW_ENDPOINT],
     queryFn: queryFunctionWithAxios,
     enabled: !!twilightAddress,
     refetchInterval: 5000,
+    select: (data) =>
+      data.attestations.length > 0
+        ? data.attestations.filter(
+            (attestation) => attestation.proposal.twilightDepositAddress === twilightAddress,
+          )
+        : [],
   });
 
   return {

@@ -256,7 +256,7 @@ function BTCDepositProposalTable({
   proposalTypeBtcDepositData,
   accountInfo,
 }: {
-  proposalTypeBtcDepositData: ProposalTypeBtcDeposit | undefined;
+  proposalTypeBtcDepositData: ProposalTypeBtcDeposit['attestations'];
   accountInfo: AccountData | undefined;
 }) {
   return (
@@ -272,7 +272,7 @@ function BTCDepositProposalTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {proposalTypeBtcDepositData?.attestations
+          {proposalTypeBtcDepositData
             .filter((item) => item.proposal.twilightDepositAddress === accountInfo?.address)
             .map((row, index) => (
               <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
@@ -293,7 +293,7 @@ function BTCWithdrawProposalTable({
   proposalTypeBtcWithdrawData,
   accountInfo,
 }: {
-  proposalTypeBtcWithdrawData: ProposalTypeBtcDeposit | undefined;
+  proposalTypeBtcWithdrawData: ProposalTypeBtcDeposit['attestations'];
   accountInfo: AccountData | undefined;
 }) {
   return (
@@ -309,7 +309,7 @@ function BTCWithdrawProposalTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {proposalTypeBtcWithdrawData?.attestations
+          {proposalTypeBtcWithdrawData
             .filter((item) => item.proposal.twilightDepositAddress === accountInfo?.address)
             .map((row, index) => (
               <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
