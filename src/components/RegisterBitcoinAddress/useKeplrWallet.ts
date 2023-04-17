@@ -1,63 +1,103 @@
-import { AccountData, Coin, OfflineSigner } from '@cosmjs/proto-signing';
+import { AccountData } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { ChainInfo } from '@keplr-wallet/types';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { chainId, twilightRestUrl, twilightRpcUrl } from './constants';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+export const getKeplr = () => {
+  if (typeof window.keplr !== 'undefined') return window.keplr;
+  throw new Error('window.keplr is not defined');
+};
+
+const getOfflineSigner = () => {
+  try {
+    const keplr = getKeplr();
+    return keplr.getOfflineSigner(chainId);
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAccounts = () => {
+  try {
+    const offlineSigner = getOfflineSigner();
+    return offlineSigner.getAccounts();
+  } catch (error) {
+    throw error;
+  }
+};
+
+const getAllBalances = async () => {
+  try {
+    const offlineSigner = getOfflineSigner();
+    const account: AccountData = (await offlineSigner.getAccounts())[0];
+    const signingClient = await SigningStargateClient.connectWithSigner(
+      twilightRpcUrl,
+      offlineSigner,
+    );
+    return signingClient.getAllBalances(account.address);
+  } catch (error) {
+    throw error;
+  }
+};
 
 export const useKeplrWallet = () => {
-  const [accountInfo, setAccountInfo] = useState<AccountData>();
-  const [accountBalanceInfo, setAccountBalanceInfo] = useState<readonly Coin[]>();
   const [keplrConnected, setKeplrConnected] = useState(false);
+  const queryClient = useQueryClient();
 
-  const keplrConnectionRef = useRef<boolean>();
-  keplrConnectionRef.current = keplrConnected;
+  const getAccountsQuery = useQuery({
+    queryKey: ['getAccounts'],
+    queryFn: getAccounts,
+    enabled: keplrConnected,
+    refetchInterval: 3000,
+  });
+
+  const getAllBalancesQuery = useQuery({
+    queryKey: ['accountBalanceInfo'],
+    queryFn: getAllBalances,
+    enabled: keplrConnected,
+    refetchInterval: 3000,
+  });
 
   useEffect(() => {
-    const getAccountInfoAndBalance = async () => {
-      if (window.keplr && keplrConnected) {
-        const offlineSigner: OfflineSigner = window.keplr.getOfflineSigner!(chainId);
-        const account: AccountData = (await offlineSigner.getAccounts())[0];
-        setAccountInfo(account);
-
-        const signingClient = await SigningStargateClient.connectWithSigner(
-          twilightRpcUrl,
-          offlineSigner,
-        );
-        const balances: readonly Coin[] = (await signingClient.getAllBalances(account.address))!;
-        keplrConnectionRef.current && setAccountBalanceInfo(balances);
-      }
-    };
-    const interval = setInterval(getAccountInfoAndBalance, 3000);
-
-    return () => clearInterval(interval);
-  }, [keplrConnected]);
+    if (window.keplr && getAccountsQuery.data) {
+      setKeplrConnected(true);
+    }
+  }, [getAccountsQuery.data]);
 
   const connectKeplr = async () => {
     if (!window.keplr) {
       alert('Please install keplr extension');
     } else {
-      await window.keplr!.experimentalSuggestChain(getTestnetChainInfo());
-      await window.keplr.enable(chainId);
-
+      try {
+        await window.keplr!.experimentalSuggestChain(getTestnetChainInfo());
+        await window.keplr.enable(chainId);
+      } catch (error) {
+        alert('Please use the recent version of keplr extension');
+      }
       setKeplrConnected(true);
     }
   };
 
   const disconnectKeplr = async () => {
     if (window.keplr) {
-      await window.keplr.disable(chainId);
-      setKeplrConnected(false);
-      setAccountInfo(undefined);
-      setAccountBalanceInfo(undefined);
+      try {
+        await window.keplr.disable(chainId);
+        queryClient.clear();
+        setKeplrConnected(false);
+      } catch (error) {
+        throw error;
+      }
     }
   };
 
   return {
     connectKeplr,
-    accountInfo,
-    accountBalanceInfo,
     keplrConnected,
     disconnectKeplr,
+    getAccountsQuery,
+    getAllBalancesQuery,
   };
 };
 
