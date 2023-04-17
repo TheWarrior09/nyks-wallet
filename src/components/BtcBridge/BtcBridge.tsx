@@ -28,7 +28,7 @@ import Long from 'long';
 
 const RESERVE_ADDRESS = '1JRhv7zRN9xCyTntYT5nuupg7JMsE7YocL';
 
-export default function RegisterBitcoinAddress() {
+export default function BtcBridge() {
   const [btcDepositAddress, setBtcDepositAddress] = useState('');
   const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);

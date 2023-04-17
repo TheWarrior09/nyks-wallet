@@ -1,9 +1,9 @@
 import type { ReactElement } from 'react';
-import { RegisterBitcoinAddress } from 'src/components/RegisterBitcoinAddress';
+import { BtcBridge } from 'src/components/BtcBridge';
 import { BasicLayout } from 'src/layouts';
 
 export default function BtcWalletPage() {
-  return <RegisterBitcoinAddress />;
+  return <BtcBridge />;
 }
 
 BtcWalletPage.getLayout = function getLayout(page: ReactElement) {

@@ -5,10 +5,7 @@ import { grey } from '@mui/material/colors';
 import { useRouter } from 'next/router';
 import { NextLinkComposed } from 'src/components/NextLinkComposed';
 
-const pages = [
-  // { name: 'WALLET', route: '/btc-wallet' },
-  { name: 'REGISTER BITCOIN ADDRESS', route: '/register-btc-address' },
-];
+const pages = [{ name: 'BITCOIN BRIDGE', route: '/btc-bridge' }];
 
 const NavbarMenu = () => {
   const router = useRouter();
