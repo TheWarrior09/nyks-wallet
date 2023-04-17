@@ -39,13 +39,9 @@ export default function RegisterBitcoinAddress() {
   const twilightAddress = getAccountsQuery.data?.[0].address;
 
   const {
-    registeredBtcDepositAddressData,
-    registeredBtcDepositAddressStatus,
-    registeredBtcDepositAddressError,
-    reserveScriptAddressesData,
-    reserveScriptAddressesStatus,
-    refetchReserveScriptAddresses,
-    proposalTypeBtcDepositData,
+    registeredBtcDepositAddressQuery,
+    registeredReserveScriptsQuery,
+    proposalTypeBtcDepositQuery,
   } = useTwilightRestApi({ twilightAddress });
 
   const {
@@ -83,7 +79,7 @@ export default function RegisterBitcoinAddress() {
   const handleWithdrawalAmountChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setWithdrawalAmount(event.target.valueAsNumber);
 
-  const handleRefetchReserveScriptAddresses = () => refetchReserveScriptAddresses();
+  const handleRefetchReserveScriptAddresses = () => registeredReserveScriptsQuery.refetch();
 
   const handleRegisterBtcAddressOnNyks = async () => {
     registerBtcAddressOnNyks({
@@ -122,8 +118,8 @@ export default function RegisterBitcoinAddress() {
         )}
       </Box>
 
-      {registeredBtcDepositAddressStatus === 'error' &&
-      registeredBtcDepositAddressError?.response?.data.message ===
+      {registeredBtcDepositAddressQuery.status === 'error' &&
+      registeredBtcDepositAddressQuery.error?.response?.data.message ===
         "Given twilightDepositAddress doesn't exist: invalid: invalid request" ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={1}>
@@ -221,27 +217,27 @@ export default function RegisterBitcoinAddress() {
         </Typography>
       </Box>
 
-      {proposalTypeBtcDepositData ? (
+      {proposalTypeBtcDepositQuery.data ? (
         <Box sx={{ mt: 2, mb: 2 }}>
           <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
             MsgConfirmBtcDeposit
           </Typography>
 
           <BTCDepositProposalTable
-            proposalTypeBtcDepositData={proposalTypeBtcDepositData}
+            proposalTypeBtcDepositData={proposalTypeBtcDepositQuery.data}
             accountInfo={getAccountsQuery.data?.[0]}
           />
         </Box>
       ) : null}
 
-      {proposalTypeBtcDepositData ? (
+      {proposalTypeBtcDepositQuery.data ? (
         <Box sx={{ mt: 2, mb: 2 }}>
           <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
             MsgConfirmBtcWithdraw
           </Typography>
 
           <BTCWithdrawProposalTable
-            proposalTypeBtcWithdrawData={proposalTypeBtcDepositData}
+            proposalTypeBtcWithdrawData={proposalTypeBtcDepositQuery.data}
             accountInfo={getAccountsQuery.data?.[0]}
           />
         </Box>
@@ -289,13 +285,13 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
-      {registeredBtcDepositAddressStatus === 'success' &&
-      registeredBtcDepositAddressData?.depositAddress ? (
+      {registeredBtcDepositAddressQuery.status === 'success' &&
+      registeredBtcDepositAddressQuery.data?.depositAddress ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             Bitcoin address:
           </Typography>
-          <pre>{registeredBtcDepositAddressData.depositAddress}</pre>
+          <pre>{registeredBtcDepositAddressQuery.data.depositAddress}</pre>
           <FormControlLabel
             control={<Checkbox checked color="success" />}
             label="This Bitcoin address is registered on the Nyks testnet with your twilight address."
@@ -303,8 +299,8 @@ export default function RegisterBitcoinAddress() {
 
           <Typography component="div" mt={2} mb={2}>
             Please deposit your desired amount of BTC from address
-            <pre>{`"${registeredBtcDepositAddressData.depositAddress}"`}</pre> to any of the reserve
-            script address.
+            <pre>{`"${registeredBtcDepositAddressQuery.data.depositAddress}"`}</pre> to any of the
+            reserve script address.
           </Typography>
         </Box>
       ) : null}
@@ -360,12 +356,12 @@ export default function RegisterBitcoinAddress() {
         </Button>
       </Box>
 
-      {reserveScriptAddressesStatus === 'success' ? (
+      {registeredReserveScriptsQuery.status === 'success' ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             Reserve script addresses:
           </Typography>
-          <pre>{JSON.stringify(reserveScriptAddressesData?.scripts, null, 2)}</pre>
+          <pre>{JSON.stringify(registeredReserveScriptsQuery.data?.scripts, null, 2)}</pre>
         </Box>
       ) : null}
     </>
