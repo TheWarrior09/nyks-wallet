@@ -44,17 +44,8 @@ export default function RegisterBitcoinAddress() {
     proposalTypeBtcDepositQuery,
   } = useTwilightRestApi({ twilightAddress });
 
-  const {
-    registerBtcAddressOnNyks,
-    msgBtcDepositAddressResponseData,
-    msgBtcDepositAddressResponseError,
-    msgBtcDepositAddressResponseStatus,
-    withdrawBtcFromNyks,
-    msgBtcWithdrawResponseData,
-    msgBtcWithdrawResponseError,
-    msgBtcWithdrawResponseStatus,
-    getTransactionStatus,
-  } = useTwilightRpcWithCosmjs();
+  const { registerBtcDepositAddressMutation, withdrawBtcRequestMutation, getTransactionStatus } =
+    useTwilightRpcWithCosmjs();
 
   const {
     checkBtcAddressValidity: checkBtcDepositAddressValidity,
@@ -82,14 +73,14 @@ export default function RegisterBitcoinAddress() {
   const handleRefetchReserveScriptAddresses = () => registeredReserveScriptsQuery.refetch();
 
   const handleRegisterBtcAddressOnNyks = async () => {
-    registerBtcAddressOnNyks({
+    registerBtcDepositAddressMutation.mutate({
       depositAddress: btcDepositAddress,
       twilightDepositAddress: twilightAddress!,
     });
   };
 
   const handleWithdrawalBtcFromNyks = () => {
-    withdrawBtcFromNyks({
+    withdrawBtcRequestMutation.mutate({
       withdrawAddress: btcWithdrawalAddress,
       withdrawAmount: Long.fromNumber(withdrawalAmount),
       reserveAddress: RESERVE_ADDRESS,
@@ -150,9 +141,9 @@ export default function RegisterBitcoinAddress() {
             color="primary"
             sx={{ mt: 2, mb: 2 }}
             onClick={handleRegisterBtcAddressOnNyks}
-            disabled={msgBtcDepositAddressResponseStatus === 'loading'}
+            disabled={registerBtcDepositAddressMutation.status === 'loading'}
           >
-            {!(msgBtcDepositAddressResponseStatus === 'loading')
+            {!(registerBtcDepositAddressMutation.status === 'loading')
               ? 'Register BTC address on NYKS'
               : 'Loading...'}
           </Button>
@@ -201,9 +192,9 @@ export default function RegisterBitcoinAddress() {
                 color="primary"
                 sx={{ mt: 2, mb: 2 }}
                 onClick={handleWithdrawalBtcFromNyks}
-                disabled={msgBtcWithdrawResponseStatus === 'loading'}
+                disabled={withdrawBtcRequestMutation.status === 'loading'}
               >
-                {!(msgBtcWithdrawResponseStatus === 'loading')
+                {!(withdrawBtcRequestMutation.status === 'loading')
                   ? 'Withdraw BTC from NYKS'
                   : 'Loading...'}
               </Button>
@@ -305,42 +296,43 @@ export default function RegisterBitcoinAddress() {
         </Box>
       ) : null}
 
-      {msgBtcDepositAddressResponseStatus === 'success' && msgBtcDepositAddressResponseData ? (
+      {registerBtcDepositAddressMutation.status === 'success' &&
+      registerBtcDepositAddressMutation.data ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             MsgRegisterBtcDepositAddress Tx Id:
           </Typography>
 
           <Link
-            href={`http://nyks.twilight-explorer.com/transaction/${msgBtcDepositAddressResponseData.transactionHash}`}
+            href={`http://nyks.twilight-explorer.com/transaction/${registerBtcDepositAddressMutation.data.transactionHash}`}
             target="_blank"
             rel="noreferrer"
           >
-            {msgBtcDepositAddressResponseData.transactionHash}
+            {registerBtcDepositAddressMutation.data.transactionHash}
           </Link>
 
           <Typography component="div" mt={2} mb={2}>
-            Status - {getTransactionStatus(msgBtcDepositAddressResponseData)}
+            Status - {getTransactionStatus(registerBtcDepositAddressMutation.data)}
           </Typography>
         </Box>
       ) : null}
 
-      {msgBtcWithdrawResponseStatus === 'success' && msgBtcWithdrawResponseData ? (
+      {withdrawBtcRequestMutation.status === 'success' && withdrawBtcRequestMutation.data ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             MsgWithdrawBtcRequest Tx Id:
           </Typography>
 
           <Link
-            href={`http://nyks.twilight-explorer.com/transaction/${msgBtcWithdrawResponseData.transactionHash}`}
+            href={`http://nyks.twilight-explorer.com/transaction/${withdrawBtcRequestMutation.data.transactionHash}`}
             target="_blank"
             rel="noreferrer"
           >
-            {msgBtcWithdrawResponseData.transactionHash}
+            {withdrawBtcRequestMutation.data.transactionHash}
           </Link>
 
           <Typography component="div" mt={2} mb={2}>
-            Status - {getTransactionStatus(msgBtcWithdrawResponseData)}
+            Status - {getTransactionStatus(withdrawBtcRequestMutation.data)}
           </Typography>
         </Box>
       ) : null}

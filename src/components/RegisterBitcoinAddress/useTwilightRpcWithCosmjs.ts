@@ -63,12 +63,7 @@ const signAndBroadcastWithdrawBtcTx = async (msg: MsgWithdrawBtcRequest) => {
 export const useTwilightRpcWithCosmjs = () => {
   const queryClient = useQueryClient();
 
-  const {
-    data: msgBtcDepositAddressResponseData,
-    error: msgBtcDepositAddressResponseError,
-    status: msgBtcDepositAddressResponseStatus,
-    mutate: registerBtcAddressOnNyks,
-  } = useMutation({
+  const registerBtcDepositAddressMutation = useMutation({
     mutationFn: signAndBroadcastRegisterBtcAddressTx,
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -77,12 +72,7 @@ export const useTwilightRpcWithCosmjs = () => {
     },
   });
 
-  const {
-    data: msgBtcWithdrawResponseData,
-    error: msgBtcWithdrawResponseError,
-    status: msgBtcWithdrawResponseStatus,
-    mutate: withdrawBtcFromNyks,
-  } = useMutation({
+  const withdrawBtcRequestMutation = useMutation({
     mutationFn: signAndBroadcastWithdrawBtcTx,
   });
 
@@ -90,14 +80,8 @@ export const useTwilightRpcWithCosmjs = () => {
     isDeliverTxSuccess(txResponse) ? 'Success' : 'Failed';
 
   return {
-    registerBtcAddressOnNyks,
-    msgBtcDepositAddressResponseData,
-    msgBtcDepositAddressResponseError,
-    msgBtcDepositAddressResponseStatus,
-    withdrawBtcFromNyks,
-    msgBtcWithdrawResponseData,
-    msgBtcWithdrawResponseError,
-    msgBtcWithdrawResponseStatus,
+    registerBtcDepositAddressMutation,
+    withdrawBtcRequestMutation,
     getTransactionStatus,
   };
 };
