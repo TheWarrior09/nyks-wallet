@@ -33,8 +33,10 @@ export default function RegisterBitcoinAddress() {
   const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
 
-  const { connectKeplr, accountBalanceInfo, accountInfo, keplrConnected, disconnectKeplr } =
+  const { connectKeplr, accountBalanceInfo, getAccountsQuery, keplrConnected, disconnectKeplr } =
     useKeplrWallet();
+
+  const twilightAddress = getAccountsQuery.data?.[0].address;
 
   const {
     registeredBtcDepositAddressData,
@@ -45,7 +47,7 @@ export default function RegisterBitcoinAddress() {
     reserveScriptAddressesStatus,
     refetchReserveScriptAddresses,
     proposalTypeBtcDepositData,
-  } = useTwilightRestApi({ twilightAddress: accountInfo?.address });
+  } = useTwilightRestApi({ twilightAddress });
 
   const {
     registerBtcAddressOnNyks,
@@ -87,7 +89,7 @@ export default function RegisterBitcoinAddress() {
   const handleRegisterBtcAddressOnNyks = async () => {
     registerBtcAddressOnNyks({
       depositAddress: btcDepositAddress,
-      twilightDepositAddress: accountInfo?.address!,
+      twilightDepositAddress: twilightAddress!,
     });
   };
 
@@ -96,7 +98,7 @@ export default function RegisterBitcoinAddress() {
       withdrawAddress: btcWithdrawalAddress,
       withdrawAmount: Long.fromNumber(withdrawalAmount),
       reserveAddress: RESERVE_ADDRESS,
-      twilightAddress: accountInfo?.address!,
+      twilightAddress: twilightAddress!,
     });
   };
 
@@ -241,12 +243,12 @@ export default function RegisterBitcoinAddress() {
         </Typography>
       </Box>
 
-      {accountInfo ? (
+      {twilightAddress ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             Twilight address:
           </Typography>
-          <pre>{accountInfo.address}</pre>
+          <pre>{twilightAddress}</pre>
         </Box>
       ) : null}
 
