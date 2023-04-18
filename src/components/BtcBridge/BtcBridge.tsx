@@ -73,39 +73,16 @@ export default function BtcBridge() {
         <>
           <RegisterBtcAddress twilightAddress={twilightAddress} />
           <WithdrawBtc twilightAddress={twilightAddress} />
+
+          <Box>
+            <Typography mt={2} mb={2}>
+              Nyks BTC balance shown after 5 blocks conformation on BTC blockchain.
+            </Typography>
+          </Box>
+
+          <BtcDepositProposalSection twilightAddress={twilightAddress} />
+          <BtcWithdrawProposalSection twilightAddress={twilightAddress} />
         </>
-      ) : null}
-
-      <Box>
-        <Typography mt={2} mb={2}>
-          Nyks BTC balance shown after 5 blocks conformation on BTC blockchain.
-        </Typography>
-      </Box>
-
-      {proposalTypeBtcDepositQuery.data ? (
-        <Box sx={{ mt: 2, mb: 2 }}>
-          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
-            MsgConfirmBtcDeposit
-          </Typography>
-
-          <BTCDepositProposalTable
-            proposalTypeBtcDepositData={proposalTypeBtcDepositQuery.data}
-            accountInfo={getAccountsQuery.data?.[0]}
-          />
-        </Box>
-      ) : null}
-
-      {proposalTypeBtcDepositQuery.data ? (
-        <Box sx={{ mt: 2, mb: 2 }}>
-          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
-            MsgConfirmBtcWithdraw
-          </Typography>
-
-          <BTCWithdrawProposalTable
-            proposalTypeBtcWithdrawData={proposalTypeBtcDepositQuery.data}
-            accountInfo={getAccountsQuery.data?.[0]}
-          />
-        </Box>
       ) : null}
     </>
   );
@@ -252,12 +229,28 @@ export default function BtcBridge() {
   );
 }
 
+
+function BtcDepositProposalSection({ twilightAddress }: { twilightAddress: string }) {
+  const { proposalTypeBtcDepositQuery } = useTwilightRestApi({ twilightAddress });
+  return (
+    <>
+      {proposalTypeBtcDepositQuery.data && proposalTypeBtcDepositQuery.data.length > 0 ? (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
+            MsgConfirmBtcDeposit
+          </Typography>
+
+          <BTCDepositProposalTable proposalTypeBtcDepositData={proposalTypeBtcDepositQuery.data} />
+        </Box>
+      ) : null}
+    </>
+  );
+}
+
 function BTCDepositProposalTable({
   proposalTypeBtcDepositData,
-  accountInfo,
 }: {
   proposalTypeBtcDepositData: ProposalTypeBtcDeposit['attestations'];
-  accountInfo: AccountData | undefined;
 }) {
   return (
     <TableContainer component={Paper}>
@@ -272,29 +265,46 @@ function BTCDepositProposalTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {proposalTypeBtcDepositData
-            .filter((item) => item.proposal.twilightDepositAddress === accountInfo?.address)
-            .map((row, index) => (
-              <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{row.proposal.depositAmount}</TableCell>
-                <TableCell>{row.votes.length}</TableCell>
-                <TableCell>{row.observed.toString()}</TableCell>
-                <TableCell>{row.proposal.height}</TableCell>
-              </TableRow>
-            ))}
+          {proposalTypeBtcDepositData.map((row, index) => (
+            <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{row.proposal.depositAmount}</TableCell>
+              <TableCell>{row.votes.length}</TableCell>
+              <TableCell>{row.observed.toString()}</TableCell>
+              <TableCell>{row.proposal.height}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>
   );
 }
 
+function BtcWithdrawProposalSection({ twilightAddress }: { twilightAddress: string }) {
+  const { proposalTypeBtcWithdrawQuery } = useTwilightRestApi({
+    twilightAddress,
+  });
+  return (
+    <>
+      {proposalTypeBtcWithdrawQuery.data && proposalTypeBtcWithdrawQuery.data.length > 0 ? (
+        <Box sx={{ mt: 2, mb: 2 }}>
+          <Typography variant="h6" component="div" color="text.secondary" sx={{ mb: 2 }}>
+            MsgConfirmBtcWithdraw
+          </Typography>
+
+          <BTCWithdrawProposalTable
+            proposalTypeBtcWithdrawData={proposalTypeBtcWithdrawQuery.data}
+          />
+        </Box>
+      ) : null}
+    </>
+  );
+}
+
 function BTCWithdrawProposalTable({
   proposalTypeBtcWithdrawData,
-  accountInfo,
 }: {
   proposalTypeBtcWithdrawData: ProposalTypeBtcDeposit['attestations'];
-  accountInfo: AccountData | undefined;
 }) {
   return (
     <TableContainer component={Paper}>
@@ -309,17 +319,15 @@ function BTCWithdrawProposalTable({
           </TableRow>
         </TableHead>
         <TableBody>
-          {proposalTypeBtcWithdrawData
-            .filter((item) => item.proposal.twilightDepositAddress === accountInfo?.address)
-            .map((row, index) => (
-              <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{row.proposal.depositAmount}</TableCell>
-                <TableCell>{row.votes.length}</TableCell>
-                <TableCell>{row.observed.toString()}</TableCell>
-                <TableCell>{row.proposal.height}</TableCell>
-              </TableRow>
-            ))}
+          {proposalTypeBtcWithdrawData.map((row, index) => (
+            <TableRow key={row.height} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+              <TableCell>{index + 1}</TableCell>
+              <TableCell>{row.proposal.depositAmount}</TableCell>
+              <TableCell>{row.votes.length}</TableCell>
+              <TableCell>{row.observed.toString()}</TableCell>
+              <TableCell>{row.proposal.height}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>
