@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Container,
   FormControlLabel,
   Grid,
@@ -23,6 +24,7 @@ import { ProposalTypeBtcDeposit } from './btcWalletTypes';
 import { AccountData } from '@cosmjs/proto-signing';
 import { RegisterBtcAddress } from './RegisterBtcAddress';
 import { WithdrawBtc } from './WithdrawBtc';
+import { AxiosError } from 'axios';
 
 export const RESERVE_ADDRESS = '1JRhv7zRN9xCyTntYT5nuupg7JMsE7YocL';
 
@@ -96,55 +98,17 @@ export default function BtcBridge() {
       </Box>
 
       {twilightAddress ? (
-        <Box>
-          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-            Twilight address:
-          </Typography>
-          <pre>{twilightAddress}</pre>
-        </Box>
-      ) : null}
-
-      {getAllBalancesQuery.data ? (
-        <Box>
-          {!getAllBalancesQuery.data.find((item) => item.denom === coinDenom)?.amount ? (
+        <>
+          <Box>
             <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-              Nyks chain balance is empty. Please deposit some tokens or request some from faucet.
+              Twilight address:
             </Typography>
-          ) : (
-            <>
-              <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-                Balance:
-              </Typography>
-              <pre>
-                {getAllBalancesQuery.data.map((item) => (
-                  <div key={item.denom}>
-                    {item.denom}: {item.amount}
-                  </div>
-                ))}
-              </pre>
-            </>
-          )}
-        </Box>
-      ) : null}
+            <pre>{twilightAddress}</pre>
+          </Box>
 
-      {registeredBtcDepositAddressQuery.status === 'success' &&
-      registeredBtcDepositAddressQuery.data?.depositAddress ? (
-        <Box>
-          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-            Bitcoin address:
-          </Typography>
-          <pre>{registeredBtcDepositAddressQuery.data.depositAddress}</pre>
-          <FormControlLabel
-            control={<Checkbox checked color="success" />}
-            label="This Bitcoin address is registered on the Nyks testnet with your twilight address."
-          />
-
-          <Typography component="div" mt={2} mb={2}>
-            Please deposit your desired amount of BTC from address
-            <pre>{`"${registeredBtcDepositAddressQuery.data.depositAddress}"`}</pre> to any of the
-            reserve script address.
-          </Typography>
-        </Box>
+          <BalanceSection />
+          <RegisteredBtcAddressSection twilightAddress={twilightAddress} />
+        </>
       ) : null}
 
       {registerBtcDepositAddressMutation.status === 'success' &&
@@ -229,6 +193,90 @@ export default function BtcBridge() {
   );
 }
 
+function BalanceSection() {
+  const { getAllBalancesQuery, getNyksBalanceOnNYKS } = useKeplrWallet();
+
+  return (
+    <Box>
+      <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+        Balance:{' '}
+        {getAllBalancesQuery.status === 'success' &&
+        getAllBalancesQuery.fetchStatus === 'fetching' ? (
+          <CircularProgress size={20} />
+        ) : null}
+      </Typography>
+
+      {getAllBalancesQuery.status === 'loading' ? (
+        <Typography mt={2} mb={2}>
+          Loading...
+        </Typography>
+      ) : null}
+
+      {getAllBalancesQuery.status === 'error' ? (
+        <Typography mt={2} mb={2}>
+          Error:{' '}
+          {getAllBalancesQuery.error instanceof Error
+            ? getAllBalancesQuery.error.message
+            : 'Cannot load balance'}
+        </Typography>
+      ) : null}
+
+      {getAllBalancesQuery.status === 'success' ? (
+        <>
+          {getNyksBalanceOnNYKS() ? (
+            <pre>
+              {getAllBalancesQuery.data.map((item) => (
+                <div key={item.denom}>
+                  {item.denom}: {item.amount}
+                </div>
+              ))}
+            </pre>
+          ) : (
+            <Typography mt={2} mb={2}>
+              Nyks chain balance is empty. Please deposit some tokens or request some from faucet.
+            </Typography>
+          )}
+        </>
+      ) : null}
+    </Box>
+  );
+}
+
+function RegisteredBtcAddressSection({ twilightAddress }: { twilightAddress: string }) {
+  const { registeredBtcDepositAddressQuery } = useTwilightRestApi({ twilightAddress });
+  return (
+    <Box>
+      <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+        Registered bitcoin address:
+      </Typography>
+
+      {registeredBtcDepositAddressQuery.status === 'loading' ? (
+        <Typography mt={2} mb={2}>
+          Loading...
+        </Typography>
+      ) : null}
+
+      {registeredBtcDepositAddressQuery.status === 'error' ? (
+        <Typography mt={2} mb={2}>
+          {registeredBtcDepositAddressQuery.error instanceof AxiosError &&
+          registeredBtcDepositAddressQuery.error.response?.statusText === 'Bad Request'
+            ? 'Bitcoin address is not registered. Please register it first.'
+            : 'Cannot load registered address'}
+        </Typography>
+      ) : null}
+
+      {registeredBtcDepositAddressQuery.status === 'success' ? (
+        <>
+          <pre>{registeredBtcDepositAddressQuery.data.depositAddress}</pre>
+          <Typography component="div" mt={2} mb={2}>
+            Deposit your desired amount of BTC from registered bitcoin address to any of the reserve
+            script address.
+          </Typography>
+        </>
+      ) : null}
+    </Box>
+  );
+}
 
 function BtcDepositProposalSection({ twilightAddress }: { twilightAddress: string }) {
   const { proposalTypeBtcDepositQuery } = useTwilightRestApi({ twilightAddress });
