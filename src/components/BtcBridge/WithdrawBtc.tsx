@@ -5,13 +5,14 @@ import { useValidateUserInputs } from './useValidateUserInputs';
 import { useKeplrWallet } from './useKeplrWallet';
 import Long from 'long';
 import { RESERVE_ADDRESS } from './BtcBridge';
+import Link from 'next/link';
 
 export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
   const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
 
   const { getBtcBalanceOnNYKS } = useKeplrWallet();
-  const { withdrawBtcRequestMutation } = useTwilightRpcWithCosmjs();
+  const { withdrawBtcRequestMutation, getTransactionStatus } = useTwilightRpcWithCosmjs();
   const {
     checkBtcAddressValidity: checkBtcWithdrawalAddressValidity,
     userInputAddressState: userWithdrawalAddressInputState,
@@ -73,6 +74,13 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
             />
           </Box>
 
+          {withdrawBtcRequestMutation.status === 'error' &&
+          withdrawBtcRequestMutation.error instanceof Error ? (
+            <Typography variant="body2" color="error">
+              {withdrawBtcRequestMutation.error.message}
+            </Typography>
+          ) : null}
+
           <Button
             variant="contained"
             color="primary"
@@ -85,6 +93,26 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
               ? 'Withdraw BTC from NYKS'
               : 'Loading...'}
           </Button>
+        </Box>
+      ) : null}
+
+      {withdrawBtcRequestMutation.status === 'success' && withdrawBtcRequestMutation.data ? (
+        <Box>
+          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+            MsgWithdrawBtcRequest Tx Id:
+          </Typography>
+
+          <Link
+            href={`http://nyks.twilight-explorer.com/transaction/${withdrawBtcRequestMutation.data.transactionHash}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {withdrawBtcRequestMutation.data.transactionHash}
+          </Link>
+
+          <Typography component="div" mt={2} mb={2}>
+            Status - {getTransactionStatus(withdrawBtcRequestMutation.data)}
+          </Typography>
         </Box>
       ) : null}
     </>

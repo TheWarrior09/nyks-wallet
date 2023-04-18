@@ -111,47 +111,6 @@ export default function BtcBridge() {
         </>
       ) : null}
 
-      {registerBtcDepositAddressMutation.status === 'success' &&
-      registerBtcDepositAddressMutation.data ? (
-        <Box>
-          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-            MsgRegisterBtcDepositAddress Tx Id:
-          </Typography>
-
-          <Link
-            href={`http://nyks.twilight-explorer.com/transaction/${registerBtcDepositAddressMutation.data.transactionHash}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {registerBtcDepositAddressMutation.data.transactionHash}
-          </Link>
-
-          <Typography component="div" mt={2} mb={2}>
-            Status - {getTransactionStatus(registerBtcDepositAddressMutation.data)}
-          </Typography>
-        </Box>
-      ) : null}
-
-      {withdrawBtcRequestMutation.status === 'success' && withdrawBtcRequestMutation.data ? (
-        <Box>
-          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-            MsgWithdrawBtcRequest Tx Id:
-          </Typography>
-
-          <Link
-            href={`http://nyks.twilight-explorer.com/transaction/${withdrawBtcRequestMutation.data.transactionHash}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {withdrawBtcRequestMutation.data.transactionHash}
-          </Link>
-
-          <Typography component="div" mt={2} mb={2}>
-            Status - {getTransactionStatus(withdrawBtcRequestMutation.data)}
-          </Typography>
-        </Box>
-      ) : null}
-
       <Box>
         <Button
           variant="contained"

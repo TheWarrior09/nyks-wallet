@@ -1,14 +1,15 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTwilightRestApi } from './useTwilightRestApi';
 import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
 import { useValidateUserInputs } from './useValidateUserInputs';
+import { AxiosError } from 'axios';
 
 export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: string }) {
   const [btcDepositAddress, setBtcDepositAddress] = useState('');
 
   const { registeredBtcDepositAddressQuery } = useTwilightRestApi({ twilightAddress });
-  const { registerBtcDepositAddressMutation } = useTwilightRpcWithCosmjs();
+  const { registerBtcDepositAddressMutation, getTransactionStatus } = useTwilightRpcWithCosmjs();
   const {
     checkBtcAddressValidity: checkBtcDepositAddressValidity,
     userInputAddressState: userDepositAddressInputState,
@@ -29,6 +30,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
   return (
     <>
       {registeredBtcDepositAddressQuery.status === 'error' &&
+      registeredBtcDepositAddressQuery.error instanceof AxiosError &&
       registeredBtcDepositAddressQuery.error.response?.data.message ===
         "Given twilightDepositAddress doesn't exist: invalid: invalid request" ? (
         <Box>
@@ -56,6 +58,13 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
             />
           </Box>
 
+          {registerBtcDepositAddressMutation.status === 'error' &&
+          registerBtcDepositAddressMutation.error instanceof Error ? (
+            <Typography variant="body2" color="error">
+              {registerBtcDepositAddressMutation.error.message}
+            </Typography>
+          ) : null}
+
           <Button
             variant="contained"
             color="primary"
@@ -68,6 +77,26 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
               ? 'Register BTC address on NYKS'
               : 'Loading...'}
           </Button>
+        </Box>
+      ) : null}
+
+      {registerBtcDepositAddressMutation.status === 'success' ? (
+        <Box>
+          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+            MsgRegisterBtcDepositAddress Tx Id:
+          </Typography>
+
+          <Link
+            href={`http://nyks.twilight-explorer.com/transaction/${registerBtcDepositAddressMutation.data.transactionHash}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {registerBtcDepositAddressMutation.data.transactionHash}
+          </Link>
+
+          <Typography component="div" mt={2} mb={2}>
+            Status - {getTransactionStatus(registerBtcDepositAddressMutation.data)}
+          </Typography>
         </Box>
       ) : null}
     </>
