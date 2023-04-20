@@ -99,6 +99,13 @@ export const useKeplrWallet = () => {
     return typeof btcBalanceString === 'undefined' ? 0 : Number(btcBalanceString);
   };
 
+  const getNyksBalanceOnNYKS = () => {
+    const nyksBalanceString = getAllBalancesQuery.data?.find(
+      (balance) => balance.denom === 'nyks',
+    )?.amount;
+    return typeof nyksBalanceString === 'undefined' ? 0 : Number(nyksBalanceString);
+  };
+
   return {
     connectKeplr,
     keplrConnected,
@@ -106,6 +113,7 @@ export const useKeplrWallet = () => {
     getAccountsQuery,
     getAllBalancesQuery,
     getBtcBalanceOnNYKS,
+    getNyksBalanceOnNYKS,
   };
 };
 
