@@ -1,12 +1,9 @@
 import {
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   Container,
-  FormControlLabel,
   Grid,
-  Link,
   Paper,
   Table,
   TableBody,
@@ -16,34 +13,15 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { coinDenom } from './constants';
 import { useTwilightRestApi } from './useTwilightRestApi';
-import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
 import { useKeplrWallet } from './useKeplrWallet';
 import { ProposalTypeBtcDeposit } from './btcWalletTypes';
-import { AccountData } from '@cosmjs/proto-signing';
 import { RegisterBtcAddress } from './RegisterBtcAddress';
 import { WithdrawBtc } from './WithdrawBtc';
-import { AxiosError } from 'axios';
-
-export const RESERVE_ADDRESS = '1JRhv7zRN9xCyTntYT5nuupg7JMsE7YocL';
 
 export default function BtcBridge() {
-  const { connectKeplr, getAllBalancesQuery, getAccountsQuery, keplrConnected, disconnectKeplr } =
-    useKeplrWallet();
-
+  const { connectKeplr, getAccountsQuery, keplrConnected, disconnectKeplr } = useKeplrWallet();
   const twilightAddress = getAccountsQuery.data?.[0].address;
-
-  const {
-    registeredBtcDepositAddressQuery,
-    registeredReserveAddressesQuery,
-    proposalTypeBtcDepositQuery,
-  } = useTwilightRestApi({ twilightAddress });
-
-  const { registerBtcDepositAddressMutation, withdrawBtcRequestMutation, getTransactionStatus } =
-    useTwilightRpcWithCosmjs();
-
-  const handleFetchRegisteredReserveScripts = () => registeredReserveAddressesQuery.refetch();
 
   const renderInputs = (
     <>
@@ -108,28 +86,9 @@ export default function BtcBridge() {
 
           <BalanceSection />
           <RegisteredBtcAddressSection twilightAddress={twilightAddress} />
+
+          <RegisteredReserveAddressSection twilightAddress={twilightAddress} />
         </>
-      ) : null}
-
-      <Box>
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2, mb: 2 }}
-          size="small"
-          onClick={handleFetchRegisteredReserveScripts}
-        >
-          Get reserve script address
-        </Button>
-      </Box>
-
-      {registeredReserveAddressesQuery.status === 'success' ? (
-        <Box>
-          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
-            Reserve script addresses:
-          </Typography>
-          <pre>{JSON.stringify(registeredReserveAddressesQuery.data?.addresses, null, 2)}</pre>
-        </Box>
       ) : null}
     </>
   );
@@ -152,9 +111,37 @@ export default function BtcBridge() {
   );
 }
 
+function RegisteredReserveAddressSection({ twilightAddress }: { twilightAddress: string }) {
+  const { registeredReserveAddressesQuery } = useTwilightRestApi({ twilightAddress });
+  const handleFetchRegisteredReserveScripts = () => registeredReserveAddressesQuery.refetch();
+  return (
+    <>
+      <Box>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2, mb: 2 }}
+          size="small"
+          onClick={handleFetchRegisteredReserveScripts}
+        >
+          Registered reserve addresses
+        </Button>
+      </Box>
+
+      {registeredReserveAddressesQuery.status === 'success' ? (
+        <Box>
+          <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
+            Registered reserve addresses:
+          </Typography>
+          <pre>{JSON.stringify(registeredReserveAddressesQuery.data?.addresses, null, 2)}</pre>
+        </Box>
+      ) : null}
+    </>
+  );
+}
+
 function BalanceSection() {
   const { getAllBalancesQuery, getNyksBalanceOnNYKS } = useKeplrWallet();
-
   return (
     <Box>
       <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
