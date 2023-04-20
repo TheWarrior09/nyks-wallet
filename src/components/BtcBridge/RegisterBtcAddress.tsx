@@ -3,12 +3,11 @@ import { useState } from 'react';
 import { useTwilightRestApi } from './useTwilightRestApi';
 import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
 import { useValidateUserInputs } from './useValidateUserInputs';
-import { AxiosError } from 'axios';
 
 export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: string }) {
   const [btcDepositAddress, setBtcDepositAddress] = useState('');
 
-  const { registeredBtcDepositAddressQuery, hasRegisteredBtcDepositAddress } = useTwilightRestApi({
+  const { hasRegisteredBtcDepositAddress } = useTwilightRestApi({
     twilightAddress,
   });
   const { registerBtcDepositAddressMutation, getTransactionStatus } = useTwilightRpcWithCosmjs();
