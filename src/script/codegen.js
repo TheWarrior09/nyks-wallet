@@ -15,9 +15,6 @@ telescope
           toJSON: true,
         },
       },
-      reactQuery: {
-        enabled: true,
-      },
     },
   })
   .then(() => {
