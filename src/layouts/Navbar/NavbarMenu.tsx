@@ -3,7 +3,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import React from 'react';
 import { grey } from '@mui/material/colors';
 import { useRouter } from 'next/router';
-import { NextLinkComposed } from 'src/modules/NextLinkComposed';
+import { NextLinkComposed } from 'src/layouts/NextLinkComposed';
 
 const pages = [{ name: 'BITCOIN BRIDGE', route: '/btc-bridge' }];
 
