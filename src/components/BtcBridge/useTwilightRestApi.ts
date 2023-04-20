@@ -2,7 +2,7 @@ import {
   ProposalTypeBtcDeposit,
   ProposalTypeBtcWithdraw,
   RegisteredBtcDepositAddress,
-  RegisteredReserveScriptsResponse,
+  RegisteredReserveAddressesResponse,
 } from './btcWalletTypes';
 import { twilightRestUrl } from './constants';
 import { useQuery } from '@tanstack/react-query';
@@ -25,13 +25,14 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
     retry: 1,
   });
 
-  const RESERVE_SCRIPT_ADDRESS_ENDPOINT = `${twilightRestUrl}twilight-project/nyks/bridge/registered_reserve_scripts`;
+  const REGISTERED_RESERVE_ADDRESS_ENDPOINT = `${twilightRestUrl}twilight-project/nyks/bridge/registered_reserve_addresses`;
 
-  const registeredReserveScriptsQuery = useQuery<RegisteredReserveScriptsResponse>({
-    queryKey: ['registered_reserve_scripts', RESERVE_SCRIPT_ADDRESS_ENDPOINT],
+  const registeredReserveAddressesQuery = useQuery<RegisteredReserveAddressesResponse>({
+    queryKey: ['registered_reserve_addresses', REGISTERED_RESERVE_ADDRESS_ENDPOINT],
     queryFn: queryFunctionWithAxios,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
+    refetchOnReconnect: false,
     retry: false,
     enabled: false,
   });
@@ -77,7 +78,7 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
 
   return {
     registeredBtcDepositAddressQuery,
-    registeredReserveScriptsQuery,
+    registeredReserveAddressesQuery,
     proposalTypeBtcDepositQuery,
     proposalTypeBtcWithdrawQuery,
     hasRegisteredBtcDepositAddress,

@@ -36,14 +36,14 @@ export default function BtcBridge() {
 
   const {
     registeredBtcDepositAddressQuery,
-    registeredReserveScriptsQuery,
+    registeredReserveAddressesQuery,
     proposalTypeBtcDepositQuery,
   } = useTwilightRestApi({ twilightAddress });
 
   const { registerBtcDepositAddressMutation, withdrawBtcRequestMutation, getTransactionStatus } =
     useTwilightRpcWithCosmjs();
 
-  const handleFetchRegisteredReserveScripts = () => registeredReserveScriptsQuery.refetch();
+  const handleFetchRegisteredReserveScripts = () => registeredReserveAddressesQuery.refetch();
 
   const renderInputs = (
     <>
@@ -123,12 +123,12 @@ export default function BtcBridge() {
         </Button>
       </Box>
 
-      {registeredReserveScriptsQuery.status === 'success' ? (
+      {registeredReserveAddressesQuery.status === 'success' ? (
         <Box>
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             Reserve script addresses:
           </Typography>
-          <pre>{JSON.stringify(registeredReserveScriptsQuery.data?.scripts, null, 2)}</pre>
+          <pre>{JSON.stringify(registeredReserveAddressesQuery.data?.addresses, null, 2)}</pre>
         </Box>
       ) : null}
     </>

@@ -4,11 +4,12 @@ declare global {
   interface Window extends KeplrWindow {}
 }
 
-export interface RegisteredReserveScriptsResponse {
-  scripts: ScriptsEntity[] | [];
+export interface RegisteredReserveAddressesResponse {
+  addresses: AddressEntity[] | [];
 }
-interface ScriptsEntity {
+interface AddressEntity {
   reserveScript: string;
+  reserveAddress: string;
   judgeAddress: string;
 }
 
