@@ -1,11 +1,12 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
 import { useValidateUserInputs } from './useValidateUserInputs';
 import { useKeplrWallet } from './useKeplrWallet';
 import Long from 'long';
-import { RESERVE_ADDRESS } from './BtcBridge';
-import Link from 'next/link';
+
+const RESERVE_ADDRESS = '14uEN8abvKA1zgYCpv8MWCUwAMLGBqdZGM';
 
 export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
   const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
