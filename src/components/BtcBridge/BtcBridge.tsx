@@ -202,7 +202,9 @@ function BalanceSection() {
 }
 
 function RegisteredBtcAddressSection({ twilightAddress }: { twilightAddress: string }) {
-  const { registeredBtcDepositAddressQuery } = useTwilightRestApi({ twilightAddress });
+  const { registeredBtcDepositAddressQuery, hasRegisteredBtcDepositAddress } = useTwilightRestApi({
+    twilightAddress,
+  });
   return (
     <Box>
       <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
@@ -217,8 +219,7 @@ function RegisteredBtcAddressSection({ twilightAddress }: { twilightAddress: str
 
       {registeredBtcDepositAddressQuery.status === 'error' ? (
         <Typography mt={2} mb={2}>
-          {registeredBtcDepositAddressQuery.error instanceof AxiosError &&
-          registeredBtcDepositAddressQuery.error.response?.statusText === 'Bad Request'
+          {!hasRegisteredBtcDepositAddress()
             ? 'Bitcoin address is not registered. Please register it first.'
             : 'Cannot load registered address'}
         </Typography>

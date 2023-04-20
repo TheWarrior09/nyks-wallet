@@ -8,7 +8,9 @@ import { AxiosError } from 'axios';
 export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: string }) {
   const [btcDepositAddress, setBtcDepositAddress] = useState('');
 
-  const { registeredBtcDepositAddressQuery } = useTwilightRestApi({ twilightAddress });
+  const { registeredBtcDepositAddressQuery, hasRegisteredBtcDepositAddress } = useTwilightRestApi({
+    twilightAddress,
+  });
   const { registerBtcDepositAddressMutation, getTransactionStatus } = useTwilightRpcWithCosmjs();
   const {
     checkBtcAddressValidity: checkBtcDepositAddressValidity,
@@ -29,10 +31,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
 
   return (
     <>
-      {registeredBtcDepositAddressQuery.status === 'error' &&
-      registeredBtcDepositAddressQuery.error instanceof AxiosError &&
-      registeredBtcDepositAddressQuery.error.response?.data.message ===
-        "Given twilightDepositAddress doesn't exist: invalid: invalid request" ? (
+      {!hasRegisteredBtcDepositAddress() ? (
         <Box>
           <Typography variant="h5" component="div" color="text.secondary" mt={1} mb={1}>
             Register bitcoin address
