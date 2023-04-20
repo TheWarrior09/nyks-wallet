@@ -3,10 +3,10 @@ import {
   ProposalTypeBtcWithdraw,
   RegisteredBtcDepositAddress,
   RegisteredReserveAddressesResponse,
-} from './btcWalletTypes';
-import { twilightRestUrl } from './constants';
+} from '../btcWalletTypes';
+import { twilightRestUrl } from '../constants';
 import { useQuery } from '@tanstack/react-query';
-import { queryFunctionWithAxios } from './utils';
+import { queryFunctionWithAxios } from '../utils';
 import { AxiosError } from 'axios';
 
 interface UseTwilightRestApi {

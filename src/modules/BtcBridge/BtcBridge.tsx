@@ -13,11 +13,11 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useTwilightRestApi } from './useTwilightRestApi';
-import { useKeplrWallet } from './useKeplrWallet';
+import { useTwilightRestApi } from './hooks/useTwilightRestApi';
+import { useKeplrWallet } from './hooks/useKeplrWallet';
 import { ProposalTypeBtcDeposit } from './btcWalletTypes';
-import { RegisterBtcAddress } from './RegisterBtcAddress';
-import { WithdrawBtc } from './WithdrawBtc';
+import { RegisterBtcAddress } from './components/RegisterBtcAddress';
+import { WithdrawBtc } from './components/WithdrawBtc';
 
 export default function BtcBridge() {
   const { connectKeplr, getAccountsQuery, keplrConnected, disconnectKeplr } = useKeplrWallet();

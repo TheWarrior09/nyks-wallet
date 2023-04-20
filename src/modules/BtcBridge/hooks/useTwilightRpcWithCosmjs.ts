@@ -1,7 +1,7 @@
 import { OfflineSigner } from '@cosmjs/proto-signing';
 import { isDeliverTxSuccess, GasPrice, calculateFee, DeliverTxResponse } from '@cosmjs/stargate';
 import { getSigningTwilightprojectClient, twilightproject } from 'src/codegen';
-import { chainId, twilightRpcUrl } from './constants';
+import { chainId, twilightRpcUrl } from '../constants';
 import { MsgRegisterBtcDepositAddress, MsgWithdrawBtcRequest } from 'src/codegen/nyks/bridge/tx';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { getKeplr } from './useKeplrWallet';

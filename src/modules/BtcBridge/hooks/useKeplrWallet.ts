@@ -2,7 +2,7 @@ import { AccountData } from '@cosmjs/proto-signing';
 import { SigningStargateClient } from '@cosmjs/stargate';
 import { ChainInfo } from '@keplr-wallet/types';
 import { useEffect, useState } from 'react';
-import { chainId, twilightRestUrl, twilightRpcUrl } from './constants';
+import { chainId, twilightRestUrl, twilightRpcUrl } from '../constants';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const getKeplr = () => {

@@ -1,8 +1,8 @@
 import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useTwilightRestApi } from './useTwilightRestApi';
-import { useTwilightRpcWithCosmjs } from './useTwilightRpcWithCosmjs';
-import { useValidateUserInputs } from './useValidateUserInputs';
+import { useTwilightRestApi } from '../hooks/useTwilightRestApi';
+import { useTwilightRpcWithCosmjs } from '../hooks/useTwilightRpcWithCosmjs';
+import { useValidateUserInputs } from '../hooks/useValidateUserInputs';
 
 export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: string }) {
   const [btcDepositAddress, setBtcDepositAddress] = useState('');
