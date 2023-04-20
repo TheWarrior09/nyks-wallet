@@ -1,5 +1,5 @@
 import { AppBar, Box, Grid, Toolbar } from '@mui/material';
-import { NextLinkComposed } from 'src/components/NextLinkComposed';
+import { NextLinkComposed } from 'src/modules/NextLinkComposed';
 
 export default function NavbarTop() {
   return (

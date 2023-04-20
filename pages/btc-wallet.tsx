@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { BtcWallet } from 'src/components/BtcWallet';
+import { BtcWallet } from 'src/modules/BtcWallet';
 import { BasicLayout } from 'src/layouts';
 
 export default function BtcWalletPage() {
