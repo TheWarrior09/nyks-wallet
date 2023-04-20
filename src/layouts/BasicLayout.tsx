@@ -1,4 +1,4 @@
-import Navbar from 'src/modules/Navbar';
+import Navbar from 'src/layouts/Navbar';
 
 export default function BasicLayout({ children }: { children: React.ReactNode }) {
   return (
