@@ -73,10 +73,10 @@ export const useKeplrWallet = () => {
       try {
         await window.keplr!.experimentalSuggestChain(getTestnetChainInfo());
         await window.keplr.enable(chainId);
+        setKeplrConnected(true);
       } catch (error) {
         alert('Please use the recent version of keplr extension');
       }
-      setKeplrConnected(true);
     }
   };
 
@@ -94,7 +94,7 @@ export const useKeplrWallet = () => {
 
   const getBtcBalanceOnNYKS = () => {
     const btcBalanceString = getAllBalancesQuery.data?.find(
-      (balance) => balance.denom === 'btc',
+      (balance) => balance.denom === 'sats',
     )?.amount;
     return typeof btcBalanceString === 'undefined' ? 0 : Number(btcBalanceString);
   };
