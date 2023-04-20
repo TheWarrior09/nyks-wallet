@@ -137,13 +137,13 @@ const getTestnetChainInfo = (): ChainInfo => ({
     {
       coinDenom: 'nyks',
       coinMinimalDenom: 'nyks',
-      coinDecimals: 1,
+      coinDecimals: 0,
       coinGeckoId: 'nyks',
     },
     {
-      coinDenom: 'btc',
-      coinMinimalDenom: 'btc',
-      coinDecimals: 8,
+      coinDenom: 'sats',
+      coinMinimalDenom: 'sats',
+      coinDecimals: 0,
       coinGeckoId: 'bitcoin',
     },
   ],
@@ -151,9 +151,8 @@ const getTestnetChainInfo = (): ChainInfo => ({
     {
       coinDenom: 'nyks',
       coinMinimalDenom: 'nyks',
-      coinDecimals: 1,
+      coinDecimals: 0,
       coinGeckoId: 'nyks',
-      //   gasPriceStep: { low: 50000, average: 100000, high: 200000 },
       gasPriceStep: { low: 0.01, average: 0.025, high: 0.04 },
     },
   ],
