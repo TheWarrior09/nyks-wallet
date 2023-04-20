@@ -7,6 +7,7 @@ import {
 import { twilightRestUrl } from './constants';
 import { useQuery } from '@tanstack/react-query';
 import { queryFunctionWithAxios } from './utils';
+import { AxiosError } from 'axios';
 
 interface UseTwilightRestApi {
   twilightAddress: string | undefined;
@@ -65,10 +66,20 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
         : [],
   });
 
+  const hasRegisteredBtcDepositAddress = () => {
+    const isBtcDepositAddressRegistered =
+      registeredBtcDepositAddressQuery.status === 'error' &&
+      registeredBtcDepositAddressQuery.error instanceof AxiosError &&
+      registeredBtcDepositAddressQuery.error.response?.data.message ===
+        "Given twilightDepositAddress doesn't exist: invalid: invalid request";
+    return !isBtcDepositAddressRegistered;
+  };
+
   return {
     registeredBtcDepositAddressQuery,
     registeredReserveScriptsQuery,
     proposalTypeBtcDepositQuery,
     proposalTypeBtcWithdrawQuery,
+    hasRegisteredBtcDepositAddress,
   };
 };
