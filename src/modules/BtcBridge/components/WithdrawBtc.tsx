@@ -6,10 +6,9 @@ import { useValidateUserInputs } from '../hooks/useValidateUserInputs';
 import { useKeplrWallet } from '../hooks/useKeplrWallet';
 import Long from 'long';
 
-const RESERVE_ADDRESS = '14uEN8abvKA1zgYCpv8MWCUwAMLGBqdZGM';
-
 export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
   const [btcWithdrawalAddress, setBtcWithdrawalAddress] = useState('');
+  const [reserveAddress, setReserveAddress] = useState('');
   const [withdrawalAmount, setWithdrawalAmount] = useState(0);
 
   const { getBtcBalanceOnNYKS } = useKeplrWallet();
@@ -21,8 +20,17 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
     btcAddress: btcWithdrawalAddress,
   });
 
+  const {
+    checkBtcAddressValidity: checkReserveAddressValidity,
+    userInputAddressState: userReserveAddressInputState,
+  } = useValidateUserInputs({
+    btcAddress: reserveAddress,
+  });
   const handleWithdrawalAddressChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setBtcWithdrawalAddress(event.target.value);
+
+  const handleReserveAddressChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setReserveAddress(event.target.value);
 
   const handleWithdrawalAmountChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setWithdrawalAmount(event.target.valueAsNumber);
@@ -31,8 +39,8 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
     withdrawBtcRequestMutation.mutate({
       withdrawAddress: btcWithdrawalAddress,
       withdrawAmount: Long.fromNumber(withdrawalAmount),
-      reserveAddress: RESERVE_ADDRESS,
-      twilightAddress: twilightAddress!,
+      reserveAddress,
+      twilightAddress,
     });
   };
   return (
@@ -44,35 +52,59 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
           </Typography>
 
           <Box component="form" noValidate autoComplete="off">
-            <TextField
-              id="outlined-basic"
-              label="Bitcoin Withdraw Address"
-              placeholder="Bitcoin address for withdrawal from NYKS"
-              variant="outlined"
-              type="text"
-              size="small"
-              onChange={handleWithdrawalAddressChange}
-              value={btcWithdrawalAddress}
-              onBlur={checkBtcWithdrawalAddressValidity}
-              error={
-                typeof userWithdrawalAddressInputState === 'undefined'
-                  ? false
-                  : !userWithdrawalAddressInputState
-              }
-              sx={{ width: '450px' }}
-            />
+            <Box>
+              <TextField
+                id="outlined-basic"
+                label="Bitcoin Withdraw Address"
+                placeholder="Bitcoin address for withdrawal from NYKS"
+                variant="outlined"
+                type="text"
+                size="small"
+                onChange={handleWithdrawalAddressChange}
+                value={btcWithdrawalAddress}
+                onBlur={checkBtcWithdrawalAddressValidity}
+                error={
+                  typeof userWithdrawalAddressInputState === 'undefined'
+                    ? false
+                    : !userWithdrawalAddressInputState
+                }
+                sx={{ width: '450px' }}
+              />
+            </Box>
 
-            <TextField
-              id="outlined-basic"
-              label="Amount"
-              placeholder="Bitcoin withdraw amount"
-              variant="outlined"
-              type="number"
-              size="small"
-              onChange={handleWithdrawalAmountChange}
-              value={withdrawalAmount}
-              sx={{ ml: 1 }}
-            />
+            <Box>
+              <TextField
+                id="outlined-basic"
+                label="Reserve Address"
+                placeholder="Reserve address for withdrawal from NYKS"
+                variant="outlined"
+                type="text"
+                size="small"
+                onChange={handleReserveAddressChange}
+                value={reserveAddress}
+                onBlur={checkReserveAddressValidity}
+                error={
+                  typeof userReserveAddressInputState === 'undefined'
+                    ? false
+                    : !userReserveAddressInputState
+                }
+                sx={{ width: '450px', mt: 2 }}
+              />
+            </Box>
+
+            <Box>
+              <TextField
+                id="outlined-basic"
+                label="Amount"
+                placeholder="Bitcoin withdraw amount"
+                variant="outlined"
+                type="number"
+                size="small"
+                onChange={handleWithdrawalAmountChange}
+                value={withdrawalAmount}
+                sx={{ mt: 2 }}
+              />
+            </Box>
           </Box>
 
           {withdrawBtcRequestMutation.status === 'error' &&
