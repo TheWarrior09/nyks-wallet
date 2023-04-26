@@ -4,6 +4,9 @@ import {
   CircularProgress,
   Container,
   Grid,
+  List,
+  ListItem,
+  ListItemText,
   Paper,
   Table,
   TableBody,
@@ -133,7 +136,37 @@ function RegisteredReserveAddressSection({ twilightAddress }: { twilightAddress:
           <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
             Registered reserve addresses:
           </Typography>
-          <pre>{JSON.stringify(registeredReserveAddressesQuery.data?.addresses, null, 2)}</pre>
+
+          {registeredReserveAddressesQuery.data.addresses.length > 0
+            ? registeredReserveAddressesQuery.data.addresses.map((item) => (
+                <Paper variant="outlined" key={item.judgeAddress}>
+                  <List dense>
+                    <ListItem>
+                      <ListItemText
+                        primary="Judge Address:"
+                        secondary={item.judgeAddress}
+                        secondaryTypographyProps={{ sx: { wordBreak: 'break-all' } }}
+                      />
+                    </ListItem>
+
+                    <ListItem>
+                      <ListItemText
+                        primary="Reserve Address:"
+                        secondary={item.reserveAddress}
+                        secondaryTypographyProps={{ sx: { wordBreak: 'break-all' } }}
+                      />
+                    </ListItem>
+                    <ListItem>
+                      <ListItemText
+                        primary="Reserve Script:"
+                        secondary={item.reserveScript}
+                        secondaryTypographyProps={{ sx: { wordBreak: 'break-all' } }}
+                      />
+                    </ListItem>
+                  </List>
+                </Paper>
+              ))
+            : null}
         </Box>
       ) : null}
     </>
