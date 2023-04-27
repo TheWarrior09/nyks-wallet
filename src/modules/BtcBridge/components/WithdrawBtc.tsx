@@ -1,5 +1,4 @@
-import { Box, Button, TextField, Typography } from '@mui/material';
-import Link from 'next/link';
+import { Box, Button, Link, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useTwilightRpcWithCosmjs } from '../hooks/useTwilightRpcWithCosmjs';
 import { useValidateUserInputs } from '../hooks/useValidateUserInputs';
@@ -52,7 +51,7 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
           </Typography>
 
           <Box component="form" noValidate autoComplete="off">
-            <Box>
+            <Box sx={{ minWidth: '250px', maxWidth: '450px' }}>
               <TextField
                 id="outlined-basic"
                 label="Bitcoin Withdraw Address"
@@ -68,11 +67,11 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
                     ? false
                     : !userWithdrawalAddressInputState
                 }
-                sx={{ width: '450px' }}
+                sx={{ width: '100%' }}
               />
             </Box>
 
-            <Box>
+            <Box sx={{ minWidth: '250px', maxWidth: '450px' }}>
               <TextField
                 id="outlined-basic"
                 label="Reserve Address"
@@ -88,7 +87,7 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
                     ? false
                     : !userReserveAddressInputState
                 }
-                sx={{ width: '450px', mt: 2 }}
+                sx={{ width: '100%', mt: 2 }}
               />
             </Box>
 
@@ -139,6 +138,7 @@ export function WithdrawBtc({ twilightAddress }: { twilightAddress: string }) {
             href={`http://nyks.twilight-explorer.com/transaction/${withdrawBtcRequestMutation.data.transactionHash}`}
             target="_blank"
             rel="noreferrer"
+            sx={{ wordBreak: 'break-all' }}
           >
             {withdrawBtcRequestMutation.data.transactionHash}
           </Link>

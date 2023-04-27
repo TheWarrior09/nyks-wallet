@@ -84,7 +84,9 @@ export default function BtcBridge() {
             <Typography variant="h6" component="div" color="text.secondary" mt={2} mb={2}>
               Twilight address:
             </Typography>
-            <pre>{twilightAddress}</pre>
+            <Typography variant="body1" sx={{ wordBreak: 'break-all' }}>
+              {twilightAddress}
+            </Typography>
           </Box>
 
           <BalanceSection />
@@ -103,10 +105,10 @@ export default function BtcBridge() {
       </Typography>
 
       <Grid container spacing={5}>
-        <Grid item xs={6} md={6}>
+        <Grid item xs={12} md={6}>
           {renderInputs}
         </Grid>
-        <Grid item xs={6} md={6}>
+        <Grid item xs={12} md={6}>
           {renderResults}
         </Grid>
       </Grid>
@@ -247,7 +249,9 @@ function RegisteredBtcAddressSection({ twilightAddress }: { twilightAddress: str
 
       {registeredBtcDepositAddressQuery.status === 'success' ? (
         <>
-          <pre>{registeredBtcDepositAddressQuery.data.depositAddress}</pre>
+          <Typography variant="body1" sx={{ wordBreak: 'break-all' }}>
+            {registeredBtcDepositAddressQuery.data.depositAddress}
+          </Typography>
           <Typography component="div" mt={2} mb={2}>
             Deposit your desired amount of BTC from registered bitcoin address to any of the reserve
             script address.

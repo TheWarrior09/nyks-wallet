@@ -36,7 +36,12 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
             Register bitcoin address
           </Typography>
 
-          <Box component="form" noValidate autoComplete="off">
+          <Box
+            component="form"
+            noValidate
+            autoComplete="off"
+            sx={{ minWidth: '250px', maxWidth: '450px' }}
+          >
             <TextField
               id="outlined-basic"
               label="Register Bitcoin Address"
@@ -52,7 +57,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
                   ? false
                   : !userDepositAddressInputState
               }
-              sx={{ width: '450px' }}
+              sx={{ width: '100%' }}
             />
           </Box>
 
@@ -88,6 +93,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
             href={`http://nyks.twilight-explorer.com/transaction/${registerBtcDepositAddressMutation.data.transactionHash}`}
             target="_blank"
             rel="noreferrer"
+            sx={{ wordBreak: 'break-all' }}
           >
             {registerBtcDepositAddressMutation.data.transactionHash}
           </Link>
