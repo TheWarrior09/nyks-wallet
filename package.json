@@ -31,6 +31,7 @@
     "bitcoinjs-message": "^2.2.0",
     "ecpair": "^2.1.0",
     "next": "13.1.1",
+    "quisquis-wasm": "^0.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-error-boundary": "^4.0.3",

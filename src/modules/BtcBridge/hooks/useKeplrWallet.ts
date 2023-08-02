@@ -28,6 +28,16 @@ const getAccounts = () => {
   }
 };
 
+export const signArbitraryMessage = async (chainID: string, signerAddress: string, msg: string) => {
+  try {
+    const keplr = getKeplr();
+    const signature = await keplr.signArbitrary(chainID, signerAddress, msg);
+    return signature;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const getAllBalances = async () => {
   try {
     const offlineSigner = getOfflineSigner();

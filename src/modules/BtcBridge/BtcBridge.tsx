@@ -21,6 +21,7 @@ import { useKeplrWallet } from './hooks/useKeplrWallet';
 import { ProposalTypeBtcDeposit } from './btcWalletTypes';
 import { RegisterBtcAddress } from './components/RegisterBtcAddress';
 import { WithdrawBtc } from './components/WithdrawBtc';
+import QuisquisWallet from './components/QuisquisWallet';
 
 export default function BtcBridge() {
   const { connectKeplr, getAccountsQuery, keplrConnected, disconnectKeplr } = useKeplrWallet();
@@ -65,6 +66,8 @@ export default function BtcBridge() {
 
           <BtcDepositProposalSection twilightAddress={twilightAddress} />
           <BtcWithdrawProposalSection twilightAddress={twilightAddress} />
+
+          <QuisquisWallet />
         </>
       ) : null}
     </>
