@@ -212,7 +212,7 @@ export function fromTimestamp(t: Timestamp): Date {
     millis += t.nanos / 1000000;
     return new Date(millis);
 };
-// @ts-ignore
+
 const fromJSON = (object: any): Timestamp => {
     return {
         seconds: isSet(object.seconds) ? Long.fromString(object.seconds) : Long.ZERO,

@@ -1,6 +1,6 @@
 import { Rpc } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
-import { MsgConfirmBtcDeposit, MsgConfirmBtcDepositResponse, MsgRegisterBtcDepositAddress, MsgRegisterBtcDepositAddressResponse, MsgRegisterReserveAddress, MsgRegisterReserveAddressResponse, MsgRegisterJudge, MsgRegisterJudgeResponse, MsgWithdrawBtcRequest, MsgWithdrawBtcRequestResponse, MsgSweepProposal, MsgSweepProposalResponse, MsgWithdrawTxSigned, MsgWithdrawTxSignedResponse, MsgWithdrawTxFinal, MsgWithdrawTxFinalResponse, MsgConfirmBtcWithdraw, MsgConfirmBtcWithdrawResponse, MsgSignRefund, MsgSignRefundResponse, MsgBroadcastRefund, MsgBroadcastRefundResponse } from "./tx";
+import { MsgConfirmBtcDeposit, MsgConfirmBtcDepositResponse, MsgRegisterBtcDepositAddress, MsgRegisterBtcDepositAddressResponse, MsgRegisterReserveAddress, MsgRegisterReserveAddressResponse, MsgRegisterJudge, MsgRegisterJudgeResponse, MsgWithdrawBtcRequest, MsgWithdrawBtcRequestResponse, MsgSweepProposal, MsgSweepProposalResponse, MsgWithdrawTxSigned, MsgWithdrawTxSignedResponse, MsgWithdrawTxFinal, MsgWithdrawTxFinalResponse, MsgSignRefund, MsgSignRefundResponse, MsgBroadcastTxSweep, MsgBroadcastTxSweepResponse, MsgSignSweep, MsgSignSweepResponse, MsgProposeRefundHash, MsgProposeRefundHashResponse, MsgConfirmBtcWithdraw, MsgConfirmBtcWithdrawResponse, MsgUnsignedTxSweep, MsgUnsignedTxSweepResponse, MsgUnsignedTxRefund, MsgUnsignedTxRefundResponse, MsgBroadcastTxRefund, MsgBroadcastTxRefundResponse, MsgProposeSweepAddress, MsgProposeSweepAddressResponse } from "./tx";
 /** Msg defines the Msg service. */
 
 export interface Msg {
@@ -14,9 +14,15 @@ export interface Msg {
   sweepProposal(request: MsgSweepProposal): Promise<MsgSweepProposalResponse>;
   withdrawTxSigned(request: MsgWithdrawTxSigned): Promise<MsgWithdrawTxSignedResponse>;
   withdrawTxFinal(request: MsgWithdrawTxFinal): Promise<MsgWithdrawTxFinalResponse>;
-  confirmBtcWithdraw(request: MsgConfirmBtcWithdraw): Promise<MsgConfirmBtcWithdrawResponse>;
   signRefund(request: MsgSignRefund): Promise<MsgSignRefundResponse>;
-  broadcastRefund(request: MsgBroadcastRefund): Promise<MsgBroadcastRefundResponse>;
+  broadcastTxSweep(request: MsgBroadcastTxSweep): Promise<MsgBroadcastTxSweepResponse>;
+  signSweep(request: MsgSignSweep): Promise<MsgSignSweepResponse>;
+  proposeRefundHash(request: MsgProposeRefundHash): Promise<MsgProposeRefundHashResponse>;
+  confirmBtcWithdraw(request: MsgConfirmBtcWithdraw): Promise<MsgConfirmBtcWithdrawResponse>;
+  unsignedTxSweep(request: MsgUnsignedTxSweep): Promise<MsgUnsignedTxSweepResponse>;
+  unsignedTxRefund(request: MsgUnsignedTxRefund): Promise<MsgUnsignedTxRefundResponse>;
+  broadcastTxRefund(request: MsgBroadcastTxRefund): Promise<MsgBroadcastTxRefundResponse>;
+  proposeSweepAddress(request: MsgProposeSweepAddress): Promise<MsgProposeSweepAddressResponse>;
 }
 export class MsgClientImpl implements Msg {
   private readonly rpc: Rpc;
@@ -31,9 +37,15 @@ export class MsgClientImpl implements Msg {
     this.sweepProposal = this.sweepProposal.bind(this);
     this.withdrawTxSigned = this.withdrawTxSigned.bind(this);
     this.withdrawTxFinal = this.withdrawTxFinal.bind(this);
-    this.confirmBtcWithdraw = this.confirmBtcWithdraw.bind(this);
     this.signRefund = this.signRefund.bind(this);
-    this.broadcastRefund = this.broadcastRefund.bind(this);
+    this.broadcastTxSweep = this.broadcastTxSweep.bind(this);
+    this.signSweep = this.signSweep.bind(this);
+    this.proposeRefundHash = this.proposeRefundHash.bind(this);
+    this.confirmBtcWithdraw = this.confirmBtcWithdraw.bind(this);
+    this.unsignedTxSweep = this.unsignedTxSweep.bind(this);
+    this.unsignedTxRefund = this.unsignedTxRefund.bind(this);
+    this.broadcastTxRefund = this.broadcastTxRefund.bind(this);
+    this.proposeSweepAddress = this.proposeSweepAddress.bind(this);
   }
 
   confirmBtcDeposit(request: MsgConfirmBtcDeposit): Promise<MsgConfirmBtcDepositResponse> {
@@ -84,22 +96,58 @@ export class MsgClientImpl implements Msg {
     return promise.then(data => MsgWithdrawTxFinalResponse.decode(new _m0.Reader(data)));
   }
 
-  confirmBtcWithdraw(request: MsgConfirmBtcWithdraw): Promise<MsgConfirmBtcWithdrawResponse> {
-    const data = MsgConfirmBtcWithdraw.encode(request).finish();
-    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "ConfirmBtcWithdraw", data);
-    return promise.then(data => MsgConfirmBtcWithdrawResponse.decode(new _m0.Reader(data)));
-  }
-
   signRefund(request: MsgSignRefund): Promise<MsgSignRefundResponse> {
     const data = MsgSignRefund.encode(request).finish();
     const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "SignRefund", data);
     return promise.then(data => MsgSignRefundResponse.decode(new _m0.Reader(data)));
   }
 
-  broadcastRefund(request: MsgBroadcastRefund): Promise<MsgBroadcastRefundResponse> {
-    const data = MsgBroadcastRefund.encode(request).finish();
-    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "BroadcastRefund", data);
-    return promise.then(data => MsgBroadcastRefundResponse.decode(new _m0.Reader(data)));
+  broadcastTxSweep(request: MsgBroadcastTxSweep): Promise<MsgBroadcastTxSweepResponse> {
+    const data = MsgBroadcastTxSweep.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "BroadcastTxSweep", data);
+    return promise.then(data => MsgBroadcastTxSweepResponse.decode(new _m0.Reader(data)));
+  }
+
+  signSweep(request: MsgSignSweep): Promise<MsgSignSweepResponse> {
+    const data = MsgSignSweep.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "SignSweep", data);
+    return promise.then(data => MsgSignSweepResponse.decode(new _m0.Reader(data)));
+  }
+
+  proposeRefundHash(request: MsgProposeRefundHash): Promise<MsgProposeRefundHashResponse> {
+    const data = MsgProposeRefundHash.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "ProposeRefundHash", data);
+    return promise.then(data => MsgProposeRefundHashResponse.decode(new _m0.Reader(data)));
+  }
+
+  confirmBtcWithdraw(request: MsgConfirmBtcWithdraw): Promise<MsgConfirmBtcWithdrawResponse> {
+    const data = MsgConfirmBtcWithdraw.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "ConfirmBtcWithdraw", data);
+    return promise.then(data => MsgConfirmBtcWithdrawResponse.decode(new _m0.Reader(data)));
+  }
+
+  unsignedTxSweep(request: MsgUnsignedTxSweep): Promise<MsgUnsignedTxSweepResponse> {
+    const data = MsgUnsignedTxSweep.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "UnsignedTxSweep", data);
+    return promise.then(data => MsgUnsignedTxSweepResponse.decode(new _m0.Reader(data)));
+  }
+
+  unsignedTxRefund(request: MsgUnsignedTxRefund): Promise<MsgUnsignedTxRefundResponse> {
+    const data = MsgUnsignedTxRefund.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "UnsignedTxRefund", data);
+    return promise.then(data => MsgUnsignedTxRefundResponse.decode(new _m0.Reader(data)));
+  }
+
+  broadcastTxRefund(request: MsgBroadcastTxRefund): Promise<MsgBroadcastTxRefundResponse> {
+    const data = MsgBroadcastTxRefund.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "BroadcastTxRefund", data);
+    return promise.then(data => MsgBroadcastTxRefundResponse.decode(new _m0.Reader(data)));
+  }
+
+  proposeSweepAddress(request: MsgProposeSweepAddress): Promise<MsgProposeSweepAddressResponse> {
+    const data = MsgProposeSweepAddress.encode(request).finish();
+    const promise = this.rpc.request("twilightproject.nyks.bridge.Msg", "ProposeSweepAddress", data);
+    return promise.then(data => MsgProposeSweepAddressResponse.decode(new _m0.Reader(data)));
   }
 
 }
