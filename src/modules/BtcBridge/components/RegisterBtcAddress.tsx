@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useTwilightRestApi } from '../hooks/useTwilightRestApi';
 import { useTwilightRpcWithCosmjs } from '../hooks/useTwilightRpcWithCosmjs';
 import { useValidateUserInputs } from '../hooks/useValidateUserInputs';
+import Long from 'long';
 
 export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: string }) {
   const [btcDepositAddress, setBtcDepositAddress] = useState('');
@@ -23,8 +24,10 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
 
   const handleRegisterBtcAddressOnNyks = async () => {
     registerBtcDepositAddressMutation.mutate({
-      depositAddress: btcDepositAddress,
-      twilightDepositAddress: twilightAddress!,
+      btcDepositAddress: btcDepositAddress,
+      btcSatoshiTestAmount: Long.fromNumber(10000),
+      twilightStakingAmount: Long.fromNumber(10000),
+      twilightAddress: twilightAddress,
     });
   };
 
@@ -59,6 +62,10 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
               }
               sx={{ width: '100%' }}
             />
+          </Box>
+
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2">Satoshi test amount: 10,000 sats</Typography>
           </Box>
 
           {registerBtcDepositAddressMutation.status === 'error' &&

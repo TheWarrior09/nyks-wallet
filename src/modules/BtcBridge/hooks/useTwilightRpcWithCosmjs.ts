@@ -24,21 +24,19 @@ const signAndBroadcastRegisterBtcAddressTx = async (msg: MsgRegisterBtcDepositAd
   const signingClient = await getSigningClient();
   const { registerBtcDepositAddress } = twilightproject.nyks.bridge.MessageComposer.withTypeUrl;
   const msgRegisterBtcDepositAddress = registerBtcDepositAddress({
-    depositAddress: msg.depositAddress,
-    twilightDepositAddress: msg.twilightDepositAddress,
+    btcDepositAddress: msg.btcDepositAddress,
+    btcSatoshiTestAmount: msg.btcSatoshiTestAmount,
+    twilightStakingAmount: msg.twilightStakingAmount,
+    twilightAddress: msg.twilightAddress,
   });
   const gasPrice = GasPrice.fromString('1nyks');
   const gasEstimation = await signingClient.simulate(
-    msg.twilightDepositAddress,
+    msg.twilightAddress,
     [msgRegisterBtcDepositAddress],
     '',
   );
   const fee = calculateFee(Math.round(gasEstimation * 1.3), gasPrice);
-  return signingClient.signAndBroadcast(
-    msg.twilightDepositAddress,
-    [msgRegisterBtcDepositAddress],
-    fee,
-  );
+  return signingClient.signAndBroadcast(msg.twilightAddress, [msgRegisterBtcDepositAddress], fee);
 };
 
 const signAndBroadcastWithdrawBtcTx = async (msg: MsgWithdrawBtcRequest) => {
