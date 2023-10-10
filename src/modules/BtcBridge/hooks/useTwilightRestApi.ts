@@ -72,7 +72,7 @@ export const useTwilightRestApi = ({ twilightAddress }: UseTwilightRestApi) => {
       registeredBtcDepositAddressQuery.status === 'error' &&
       registeredBtcDepositAddressQuery.error instanceof AxiosError &&
       registeredBtcDepositAddressQuery.error.response?.data.message ===
-        "Given twilightDepositAddress doesn't exist: invalid: invalid request";
+        "Given twilight address doesn't exist: invalid twilight address: invalid request";
     return !isBtcDepositAddressRegistered;
   };
 
