@@ -1,23 +1,5 @@
-import { Long, isSet, DeepPartial } from "../../helpers";
+import { Long, isSet, DeepPartial, bytesFromBase64, base64FromBytes } from "../../helpers";
 import * as _m0 from "protobufjs/minimal";
-/**
- * IndividualTwilightReserveAccount is used to keep a mapping of how much btc an individual
- * twilight address has in the reserve
- */
-
-export interface IndividualTwilightReserveAccount {
-  TwilightAddress: string;
-  BtcValue: Long;
-}
-/**
- * IndividualTwilightReserveAccount is used to keep a mapping of how much btc an individual
- * twilight address has in the reserve
- */
-
-export interface IndividualTwilightReserveAccountSDKType {
-  TwilightAddress: string;
-  BtcValue: Long;
-}
 /**
  * BtcReserve is a mapping of a validator address to a reserve ID
  * It holds other values in the reserve struct such as total
@@ -33,7 +15,8 @@ export interface BtcReserve {
   PrivatePoolValue: Long;
   PublicValue: Long;
   FeePool: Long;
-  IndividualTwilightReserveAccount: IndividualTwilightReserveAccount[];
+  UnlockHeight: Long;
+  RoundId: Long;
 }
 /**
  * BtcReserve is a mapping of a validator address to a reserve ID
@@ -50,77 +33,21 @@ export interface BtcReserveSDKType {
   PrivatePoolValue: Long;
   PublicValue: Long;
   FeePool: Long;
-  IndividualTwilightReserveAccount: IndividualTwilightReserveAccountSDKType[];
+  UnlockHeight: Long;
+  RoundId: Long;
 }
+export interface ReserveWithdrawPool {
+  ReserveID: Long;
+  RoundID: Long;
+  /** vector of identifiers */
 
-function createBaseIndividualTwilightReserveAccount(): IndividualTwilightReserveAccount {
-  return {
-    TwilightAddress: "",
-    BtcValue: Long.UZERO
-  };
+  Identifiers: Uint8Array[];
 }
-
-export const IndividualTwilightReserveAccount = {
-  encode(message: IndividualTwilightReserveAccount, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.TwilightAddress !== "") {
-      writer.uint32(10).string(message.TwilightAddress);
-    }
-
-    if (!message.BtcValue.isZero()) {
-      writer.uint32(16).uint64(message.BtcValue);
-    }
-
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): IndividualTwilightReserveAccount {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseIndividualTwilightReserveAccount();
-
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-
-      switch (tag >>> 3) {
-        case 1:
-          message.TwilightAddress = reader.string();
-          break;
-
-        case 2:
-          message.BtcValue = (reader.uint64() as Long);
-          break;
-
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-
-    return message;
-  },
-
-  fromJSON(object: any): IndividualTwilightReserveAccount {
-    return {
-      TwilightAddress: isSet(object.TwilightAddress) ? String(object.TwilightAddress) : "",
-      BtcValue: isSet(object.BtcValue) ? Long.fromValue(object.BtcValue) : Long.UZERO
-    };
-  },
-
-  toJSON(message: IndividualTwilightReserveAccount): unknown {
-    const obj: any = {};
-    message.TwilightAddress !== undefined && (obj.TwilightAddress = message.TwilightAddress);
-    message.BtcValue !== undefined && (obj.BtcValue = (message.BtcValue || Long.UZERO).toString());
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<IndividualTwilightReserveAccount>): IndividualTwilightReserveAccount {
-    const message = createBaseIndividualTwilightReserveAccount();
-    message.TwilightAddress = object.TwilightAddress ?? "";
-    message.BtcValue = object.BtcValue !== undefined && object.BtcValue !== null ? Long.fromValue(object.BtcValue) : Long.UZERO;
-    return message;
-  }
-
-};
+export interface ReserveWithdrawPoolSDKType {
+  ReserveID: Long;
+  RoundID: Long;
+  Identifiers: Uint8Array[];
+}
 
 function createBaseBtcReserve(): BtcReserve {
   return {
@@ -132,7 +59,8 @@ function createBaseBtcReserve(): BtcReserve {
     PrivatePoolValue: Long.UZERO,
     PublicValue: Long.UZERO,
     FeePool: Long.UZERO,
-    IndividualTwilightReserveAccount: []
+    UnlockHeight: Long.UZERO,
+    RoundId: Long.UZERO
   };
 }
 
@@ -170,8 +98,12 @@ export const BtcReserve = {
       writer.uint32(64).uint64(message.FeePool);
     }
 
-    for (const v of message.IndividualTwilightReserveAccount) {
-      IndividualTwilightReserveAccount.encode(v!, writer.uint32(74).fork()).ldelim();
+    if (!message.UnlockHeight.isZero()) {
+      writer.uint32(72).uint64(message.UnlockHeight);
+    }
+
+    if (!message.RoundId.isZero()) {
+      writer.uint32(80).uint64(message.RoundId);
     }
 
     return writer;
@@ -219,7 +151,11 @@ export const BtcReserve = {
           break;
 
         case 9:
-          message.IndividualTwilightReserveAccount.push(IndividualTwilightReserveAccount.decode(reader, reader.uint32()));
+          message.UnlockHeight = (reader.uint64() as Long);
+          break;
+
+        case 10:
+          message.RoundId = (reader.uint64() as Long);
           break;
 
         default:
@@ -241,7 +177,8 @@ export const BtcReserve = {
       PrivatePoolValue: isSet(object.PrivatePoolValue) ? Long.fromValue(object.PrivatePoolValue) : Long.UZERO,
       PublicValue: isSet(object.PublicValue) ? Long.fromValue(object.PublicValue) : Long.UZERO,
       FeePool: isSet(object.FeePool) ? Long.fromValue(object.FeePool) : Long.UZERO,
-      IndividualTwilightReserveAccount: Array.isArray(object?.IndividualTwilightReserveAccount) ? object.IndividualTwilightReserveAccount.map((e: any) => IndividualTwilightReserveAccount.fromJSON(e)) : []
+      UnlockHeight: isSet(object.UnlockHeight) ? Long.fromValue(object.UnlockHeight) : Long.UZERO,
+      RoundId: isSet(object.RoundId) ? Long.fromValue(object.RoundId) : Long.UZERO
     };
   },
 
@@ -255,13 +192,8 @@ export const BtcReserve = {
     message.PrivatePoolValue !== undefined && (obj.PrivatePoolValue = (message.PrivatePoolValue || Long.UZERO).toString());
     message.PublicValue !== undefined && (obj.PublicValue = (message.PublicValue || Long.UZERO).toString());
     message.FeePool !== undefined && (obj.FeePool = (message.FeePool || Long.UZERO).toString());
-
-    if (message.IndividualTwilightReserveAccount) {
-      obj.IndividualTwilightReserveAccount = message.IndividualTwilightReserveAccount.map(e => e ? IndividualTwilightReserveAccount.toJSON(e) : undefined);
-    } else {
-      obj.IndividualTwilightReserveAccount = [];
-    }
-
+    message.UnlockHeight !== undefined && (obj.UnlockHeight = (message.UnlockHeight || Long.UZERO).toString());
+    message.RoundId !== undefined && (obj.RoundId = (message.RoundId || Long.UZERO).toString());
     return obj;
   },
 
@@ -275,7 +207,95 @@ export const BtcReserve = {
     message.PrivatePoolValue = object.PrivatePoolValue !== undefined && object.PrivatePoolValue !== null ? Long.fromValue(object.PrivatePoolValue) : Long.UZERO;
     message.PublicValue = object.PublicValue !== undefined && object.PublicValue !== null ? Long.fromValue(object.PublicValue) : Long.UZERO;
     message.FeePool = object.FeePool !== undefined && object.FeePool !== null ? Long.fromValue(object.FeePool) : Long.UZERO;
-    message.IndividualTwilightReserveAccount = object.IndividualTwilightReserveAccount?.map(e => IndividualTwilightReserveAccount.fromPartial(e)) || [];
+    message.UnlockHeight = object.UnlockHeight !== undefined && object.UnlockHeight !== null ? Long.fromValue(object.UnlockHeight) : Long.UZERO;
+    message.RoundId = object.RoundId !== undefined && object.RoundId !== null ? Long.fromValue(object.RoundId) : Long.UZERO;
+    return message;
+  }
+
+};
+
+function createBaseReserveWithdrawPool(): ReserveWithdrawPool {
+  return {
+    ReserveID: Long.UZERO,
+    RoundID: Long.UZERO,
+    Identifiers: []
+  };
+}
+
+export const ReserveWithdrawPool = {
+  encode(message: ReserveWithdrawPool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (!message.ReserveID.isZero()) {
+      writer.uint32(8).uint64(message.ReserveID);
+    }
+
+    if (!message.RoundID.isZero()) {
+      writer.uint32(16).uint64(message.RoundID);
+    }
+
+    for (const v of message.Identifiers) {
+      writer.uint32(26).bytes(v!);
+    }
+
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ReserveWithdrawPool {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseReserveWithdrawPool();
+
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+
+      switch (tag >>> 3) {
+        case 1:
+          message.ReserveID = (reader.uint64() as Long);
+          break;
+
+        case 2:
+          message.RoundID = (reader.uint64() as Long);
+          break;
+
+        case 3:
+          message.Identifiers.push(reader.bytes());
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  },
+
+  fromJSON(object: any): ReserveWithdrawPool {
+    return {
+      ReserveID: isSet(object.ReserveID) ? Long.fromValue(object.ReserveID) : Long.UZERO,
+      RoundID: isSet(object.RoundID) ? Long.fromValue(object.RoundID) : Long.UZERO,
+      Identifiers: Array.isArray(object?.Identifiers) ? object.Identifiers.map((e: any) => bytesFromBase64(e)) : []
+    };
+  },
+
+  toJSON(message: ReserveWithdrawPool): unknown {
+    const obj: any = {};
+    message.ReserveID !== undefined && (obj.ReserveID = (message.ReserveID || Long.UZERO).toString());
+    message.RoundID !== undefined && (obj.RoundID = (message.RoundID || Long.UZERO).toString());
+
+    if (message.Identifiers) {
+      obj.Identifiers = message.Identifiers.map(e => base64FromBytes(e !== undefined ? e : new Uint8Array()));
+    } else {
+      obj.Identifiers = [];
+    }
+
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<ReserveWithdrawPool>): ReserveWithdrawPool {
+    const message = createBaseReserveWithdrawPool();
+    message.ReserveID = object.ReserveID !== undefined && object.ReserveID !== null ? Long.fromValue(object.ReserveID) : Long.UZERO;
+    message.RoundID = object.RoundID !== undefined && object.RoundID !== null ? Long.fromValue(object.RoundID) : Long.UZERO;
+    message.Identifiers = object.Identifiers?.map(e => e) || [];
     return message;
   }
 
