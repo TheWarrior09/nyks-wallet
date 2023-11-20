@@ -25,7 +25,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
   const handleRegisterBtcAddressOnNyks = async () => {
     registerBtcDepositAddressMutation.mutate({
       btcDepositAddress: btcDepositAddress,
-      btcSatoshiTestAmount: Long.fromNumber(10000),
+      btcSatoshiTestAmount: Long.fromNumber(50000),
       twilightStakingAmount: Long.fromNumber(10000),
       twilightAddress: twilightAddress,
     });
@@ -65,7 +65,7 @@ export function RegisterBtcAddress({ twilightAddress }: { twilightAddress: strin
           </Box>
 
           <Box sx={{ mt: 2 }}>
-            <Typography variant="body2">Satoshi test amount: 10,000 sats</Typography>
+            <Typography variant="body2">Satoshi test amount: 50,000 sats</Typography>
           </Box>
 
           {registerBtcDepositAddressMutation.status === 'error' &&
